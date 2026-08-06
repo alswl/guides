@@ -8,6 +8,7 @@ A collection of development guides and conventions for building software with a 
 | --- | --- |
 | [go-cli-guides.md](./go-cli-guides.md) | Building command-line tools (CLIs) in Go — cobra/viper stack, extensible structure, clig.dev conventions |
 | [go-server-guides.md](./go-server-guides.md) | Building HTTP API services in Go — huma + GORM stack, layered extensible structure |
+| [go-tui-guides.md](./go-tui-guides.md) | Building terminal UIs (TUIs) in Go — Bubble Tea / Elm-architecture stack, reuses the CLI layering |
 
 ## Conventions
 

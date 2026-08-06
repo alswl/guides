@@ -8,4 +8,5 @@ All notable changes to this project are documented here.
 
 - Add Go CLI development guide
 - Add Go server guide, README, and English guides
+- Layered pkg structure, remove unused tooling, prescriptive style
 

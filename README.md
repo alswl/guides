@@ -9,15 +9,12 @@ A collection of development guides and conventions for building software with a 
 | [go-cli-guides.md](./go-cli-guides.md) | Building command-line tools (CLIs) in Go — cobra/viper stack, extensible structure, clig.dev conventions |
 | [go-server-guides.md](./go-server-guides.md) | Building HTTP API services in Go — huma + GORM stack, layered extensible structure |
 
-## Principles
-
-All guides share the same design goals, in priority order:
-
-**Clarity > low maintenance cost > extensibility.**
+## Conventions
 
 - Follow mainstream community standards and de facto tooling.
-- Vertical slicing ("one feature, one package") so features extend by adding, not modifying.
-- Program to interfaces; keep entry points thin and business logic pure.
+- Layer business code as `services / managers / dal / common`; one file per entity within each layer.
+- Prefer `pkg/` (importable); use `internal/` only when code must not be importable.
+- Program to interfaces; keep entry points thin.
 
 ## Versioning & Changelog
 

@@ -1,3 +1,5 @@
+English | [简体中文](./README.zh-CN.md)
+
 # fe-page-guide-antd-demo
 
 A runnable companion project for the [Information-Dense Page Organization Guide (Ant Design)](../fe-page-guide-antd.md).

@@ -1,536 +1,594 @@
-# 企业系统页面组织指南（Ant Design）
+# Information-Dense Page Organization Guide (Ant Design)
 
-> 面向产品、设计师、前端开发者和 AI 编码工具：识别业务信息的核心模型，使用合适的表达模式和原生 Ant Design Pro / ProComponents 组织页面，让用户能够连续地理解、判断和操作。
+> For product managers, designers, frontend developers, and AI coding tools: identify the core model of business information, then use the right expression pattern and native Ant Design Pro / ProComponents to organize pages so users can understand, judge, and act continuously.
 >
-> 本手册约束的是信息表达、信息组织、页面编排和任务动线，不是一套视觉风格规范，也不是原子组件使用手册。`antd`（Ant Design）与 `@ant-design/pro-components` 的默认样式和组件行为是基线；无明确品牌、可访问性或业务表达需求时，不修改主题、不覆盖组件样式。已有项目的组件版本、业务术语和相邻页面优先于本文示例。
+> **Scope: information-dense pages** — pages where the user must understand multiple objects, multiple states, and the relationships between them within one screen, then judge and act on that understanding. The criterion is the density and structure of the information, not the product's form factor or how it's procured: admin backends, monitoring and observability consoles, data and analytics tools, ops consoles, review and ticketing systems, and trading/scheduling terminals all qualify. Marketing landing pages, content-consumption pages, and single-conversion form flows are out of scope — their success depends on persuasion and conversion, not on whether the user can judge accurately amid dense information.
 >
-> **版本：2026.09.04**（初始版本）。变更记录见 [CHANGELOG](./CHANGELOG.md)。本仓库为唯一事实源；如在其他仓库引用本规范，只允许读取，禁止就地修改，修改须回本仓库进行。
+> This handbook constrains information expression, information organization, page orchestration, and task flow — it is not a visual style spec, nor a primitive-component usage manual. The default styles and component behavior of `antd` (Ant Design) and `@ant-design/pro-components` are the baseline; without an explicit brand, accessibility, or business-expression need, do not modify the theme or override component styles. An existing project's component versions, business terminology, and neighboring pages take precedence over the examples here.
+>
+> **Version: 2026.09.04** (initial release). See [CHANGELOG](./CHANGELOG.md) for the change history. This repository is the single source of truth; if this spec is referenced from another repository, that copy is read-only — edits must be made here.
 
 ---
 
-## 一、如何使用本指南
+## 1. How to use this guide
 
-### 1.1 执行约束
+### 1.1 Execution constraints
 
-本指南只解决信息模型、页面骨架、信息分布和任务动线。实现时遵守以下最小约束：
+This guide only addresses the information model, page skeleton, information distribution, and task flow. When implementing, follow these minimum constraints:
 
-- 先确认用户、主任务、主信息模型和成功结果，再选择页面类型和组件。
-- 事实源优先级为：产品规则与权限模型 → 当前项目实现与依赖 → 本指南 → 官方文档 → 历史示例。
-- 一个页面只有一个主模型；标题、状态、主动作和核心判断信息应在首屏形成清晰顺序。
-- 不按接口字段或组件清单组织页面；不使用 Card、颜色或弹层掩盖信息层级问题。
-- 完成实现后只需验证：信息分布是否成立、主任务是否可完成、窄视口和键盘操作是否破坏结构。
+- Confirm the user, the primary task, the primary information model, and the success outcome before choosing a page type or components.
+- Source-of-truth priority: product rules and permission model → the current project's implementation and dependencies → this guide → official docs → historical examples.
+- A page has exactly one primary model; the title, status, primary action, and core judgment information should form a clear order on the first screen.
+- Do not organize a page around API fields or a component inventory; do not use Card, color, or overlays to paper over information-hierarchy problems.
+- After implementation, verify only: does the information distribution hold up, can the primary task be completed, and do narrow viewports and keyboard operation break the structure.
 
-### 1.2 三阶段工作流
+### 1.2 Three-workflow process
 
-页面设计不使用一棵包办所有问题的决策树，也不把每项质量属性拆成独立流程。统一收敛为“页面定型、页面编排、实现验收”三个阶段，本文第二、三、四章分别是三个阶段按需查阅的规则库，第五章是最终检查入口。
+Page design does not use one decision tree that tries to answer everything, nor does it split every quality attribute into its own process. It converges into three stages — "page shaping, page orchestration, implementation acceptance." Chapters 2, 3, and 4 are the rule libraries for each stage, consulted as needed; Chapter 5 is the final check-in point.
 
-| 阶段 | 产出 | 对应章节 |
+| Stage | Output | Chapter |
 |---|---|---|
-| Workflow 1：页面定型 | 主任务、主信息模型、表达模式、页面类型和骨架 | 第二章 |
-| Workflow 2：页面编排 | 内容优先级、注意力顺序、密度、任务动线和反馈方案 | 第三章 |
-| Workflow 3：实现验收 | 组件映射、适配方案和验收结果 | 第四、五章 |
+| Workflow 1: Page shaping | Primary task, primary information model, expression pattern, page type and skeleton | Chapter 2 |
+| Workflow 2: Page orchestration | Content priority, attention order, density, task flow, and feedback plan | Chapter 3 |
+| Workflow 3: Implementation acceptance | Component mapping, adaptation plan, acceptance result | Chapters 4–5 |
 
 ```mermaid
 flowchart LR
-    R[页面需求] --> W1[Workflow 1<br/>页面定型]
-    W1 --> W2[Workflow 2<br/>页面编排]
-    W2 --> W3[Workflow 3<br/>实现验收]
-    W3 -->|发现页面编排问题| W2
-    W3 -->|发现模型或骨架错误| W1
-    W3 -->|通过| O[可交付页面]
+    R[Page requirement] --> W1[Workflow 1<br/>Page shaping]
+    W1 --> W2[Workflow 2<br/>Page orchestration]
+    W2 --> W3[Workflow 3<br/>Implementation acceptance]
+    W3 -->|orchestration issue found| W2
+    W3 -->|model or skeleton error found| W1
+    W3 -->|passed| O[Deliverable page]
 ```
 
-三个工作流遵守三条边界：
+The three workflows observe three boundaries:
 
-1. Workflow 1 决定页面结构；Workflow 2 不得用隐藏信息或增加容器掩盖结构错误；Workflow 3 不得用自定义样式掩盖编排错误。
-2. 一个页面可以包含多个信息模型，但只能有一个模型决定首屏、主表达和主操作。
-3. `Tabs`、`Card`、`Drawer` 和 `Modal` 是编排容器，不是业务信息模型，也不能代替表达模式选择。
+1. Workflow 1 determines page structure; Workflow 2 must not hide information or add containers to mask structural errors; Workflow 3 must not use custom styling to mask orchestration errors.
+2. A page can contain multiple information models, but only one model may determine the first screen, the primary expression, and the primary action.
+3. `Tabs`, `Card`, `Drawer`, and `Modal` are orchestration containers, not business information models, and cannot substitute for choosing an expression pattern.
 
 ---
 
-## 二、Workflow 1：页面定型
+## 2. Workflow 1: Page shaping
 
-本工作流只决定信息本体、页面骨架和容器关系，不处理密度、颜色、间距和加载状态。
+This workflow only determines the information substance, page skeleton, and container relationships — it does not handle density, color, spacing, or loading states.
 
-### 2.1 设计目标
+### 2.1 Design goals
 
-企业内部系统的价值不是“看起来像后台”，而是帮助用户在有限注意力下准确完成任务。评价一个页面时依次问：
+The value of an information-dense page isn't how much information it holds, but whether the user can judge accurately from dense information under limited attention and complete the task. Evaluate a page by asking, in order:
 
-1. 用户能否迅速确认自己在哪里、正在处理什么对象？
-2. 用户能否找到完成主任务所需的信息和动作？
-3. 用户能否判断当前状态、动作影响和下一步？
-4. 用户出错、权限不足或系统异常时能否恢复？
-5. 不同能力、设备和操作方式的用户能否完成同一核心任务？
+1. Can the user quickly confirm where they are and what object they're working with?
+2. Can the user find the information and actions needed for the primary task?
+3. Can the user judge the current state, the effect of an action, and the next step?
+4. Can the user recover from an error, insufficient permissions, or a system exception?
+5. Can users of different abilities, devices, and input methods complete the same core task?
 
-| 原则 | 落地要求 |
+| Principle | Requirement |
 |---|---|
-| 任务优先 | 页面围绕用户目标组织，不照搬后端接口、数据库表或组织架构 |
-| 识别优于记忆 | 展示当前上下文、已选条件、单位和状态，不要求用户跨页记 ID、规则或上次输入 |
-| 渐进披露 | 默认呈现高频且影响决策的信息，低频字段、解释和高级操作在需要时展开 |
-| 一致且可预期 | 同一对象、动作、状态和反馈在全站使用同一名称与行为 |
-| 错误预防优先 | 用约束、默认值、预览、影响范围和权限提示减少错误，而不只依赖事后报错 |
-| 用户可控 | 长操作可看到进度，重要变更可取消、撤销或明确确认，不制造无出口状态 |
-| 状态连续 | 刷新、返回、重试和重新登录后，尽可能保留仍然有效的筛选、位置和草稿 |
-| 可访问是底线 | 不把可访问性当作视觉完成后的补丁；语义、键盘、焦点、对比度与文案同步设计 |
-| 原生优先 | 默认样式和组件行为保持 Ant Design Pro 一致，把设计精力用于信息取舍与组织 |
+| Task first | Organize the page around the user's goal, not around backend APIs, database tables, or org structure |
+| Recognition over recall | Show current context, selected conditions, units, and state; don't make the user remember an ID, a rule, or a prior input across pages |
+| Progressive disclosure | Show high-frequency, decision-relevant information by default; expand low-frequency fields, explanations, and advanced actions on demand |
+| Consistent and predictable | Use the same name and behavior for the same object, action, state, and feedback across the whole product |
+| Prevent errors first | Reduce errors with constraints, defaults, previews, impact scope, and permission hints — don't rely only on after-the-fact error messages |
+| User in control | Show progress for long operations; important changes can be cancelled, undone, or explicitly confirmed; never create a dead end |
+| Continuity of state | After refresh, back, retry, or re-login, preserve still-valid filters, position, and drafts wherever possible |
+| Accessibility is a baseline | Don't treat accessibility as a patch applied after the visuals are done; design semantics, keyboard, focus, contrast, and copy together |
+| Native first | Keep default styles and component behavior consistent with Ant Design Pro; prefer the component's own layout and appearance mechanisms (Card, Row/Col, List, Descriptions, etc.) over hand-written style fixes, and spend design effort on information selection and organization instead |
 
-### 2.2 从领域模型推导表达模式
+### 2.2 Deriving the expression pattern from the domain model
 
-页面形式不是起点。设计前先完成四步推导：
+Page form is not the starting point. Complete a four-step derivation before designing:
 
 ```text
-领域模型：系统里真实存在什么对象、关系、事件和规则？
+Domain model: what objects, relationships, events, and rules actually exist in the system?
     ↓
-用户任务：用户要查找、理解、比较、处理、协作，还是追溯？
+User task: does the user need to find, understand, compare, process, collaborate, or trace?
     ↓
-信息模型：完成任务所需信息是集合、层级、关系、过程还是其他结构？
+Information model: is the information needed for the task a collection, hierarchy, relationship, process, or another structure?
     ↓
-表达模式：哪种结构能让用户用最少转换完成判断和操作？
+Expression pattern: which structure lets the user judge and act with the fewest mental conversions?
 ```
 
 ```mermaid
 flowchart TD
-    A[确认用户、触发场景和成功结果] --> B{是否需要独立页面？}
-    B -->|无独立地址、权限或持续任务| B1[并入已有页面或任务流]
-    B -->|需要分享、恢复、宽空间或独立权限| C[确定唯一主任务]
+    A[Confirm the user, trigger scenario, and success outcome] --> B{Does it need a standalone page?}
+    B -->|No independent address, permission, or ongoing task| B1[Fold into an existing page or task flow]
+    B -->|Needs sharing, recovery, wide space, or independent permissions| C[Determine the single primary task]
     B1 --> C
-    C --> D{主任务意图}
-    D -->|寻找、定位| D1[集合 / 层级 / 空间]
-    D -->|理解、判断| D2[单个对象 / 关系 / 文档]
-    D -->|比较、分析| D3[集合 / 差异 / 指标]
-    D -->|推进、处理| D4[队列 / 过程状态 / 配置规则]
-    D -->|追溯、协作| D5[事件序列 / 讨论协作]
-    D1 --> E[选择一个主信息模型]
+    C --> D{Primary task intent}
+    D -->|Find, locate| D1[Collection / hierarchy / space]
+    D -->|Understand, judge| D2[Single object / relationship / document]
+    D -->|Compare, analyze| D3[Collection / diff / metrics]
+    D -->|Advance, process| D4[Queue / process state / config rules]
+    D -->|Trace, collaborate| D5[Event sequence / discussion & collaboration]
+    D1 --> E[Choose one primary information model]
     D2 --> E
     D3 --> E
     D4 --> E
     D5 --> E
-    E --> F{直接回答主问题的表达}
-    F -->|逐字段比较| F1[表格]
-    F -->|识别和进入资源| F2[列表 / 资源目录]
-    F -->|父子或路径| F3[树 / 树表]
-    F -->|依赖或影响| F4[邻接列表 / 关系图]
-    F -->|对象身份与现状| F5[对象摘要 / 分区详情]
-    F -->|阶段与下一步| F6[步骤 / 状态工作区]
-    F -->|已经发生什么| F7[时间线 / 活动流 / 日志]
-    F -->|谁提出什么并如何回应| F7A[讨论流 / 评审流]
-    F -->|前后改变了什么| F7B[差异视图]
-    F -->|趋势、分布或异常| F8[指标 / 图表 / 分析下钻]
-    F -->|位置、边界或空间分布| F8A[地图 / 空间画布]
-    F -->|策略与约束| F9[分组表单 / 规则表 / 矩阵]
-    F -->|连续阅读和章节定位| F10[文档正文 / 目录]
-    F -->|下一件优先处理什么| F11[队列 / 收件箱]
-    F1 --> G{如何维持任务上下文？}
+    E --> F{Expression that directly answers the primary question}
+    F -->|Field-by-field comparison| F1[Table]
+    F -->|Identify and enter a resource| F2[List / resource catalog]
+    F -->|Image is the recognition anchor| F2B[Card grid]
+    F -->|Parent-child or path| F3[Tree / tree table]
+    F -->|Dependency or impact| F4[Adjacency list / relationship graph]
+    F -->|Object identity and current state| F5[Object summary / sectioned detail]
+    F -->|Stage and next step| F6[Steps / status workspace]
+    F -->|Stage flow, moving is the action| F6B[Kanban / swimlanes]
+    F -->|What already happened| F7[Timeline / activity feed / log]
+    F -->|Who said what and how it was answered| F7A[Discussion thread / review thread]
+    F -->|What changed, before vs after| F7B[Diff view]
+    F -->|Trend, distribution, or anomaly| F8[Metrics / chart / analytics drill-down]
+    F -->|Location, boundary, or spatial distribution| F8A[Map / spatial canvas]
+    F -->|When is it occupied, when does it conflict| F8B[Calendar / scheduling]
+    F -->|Policy and constraints| F9[Grouped form / rule table / matrix]
+    F -->|Continuous reading and section navigation| F10[Document body / table of contents]
+    F -->|What to work on next| F11[Queue / inbox]
+    F1 --> G{How to maintain task context?}
     F2 --> G
+    F2B --> G
     F3 --> G
     F4 --> G
     F5 --> G
     F6 --> G
+    F6B --> G
     F7 --> G
     F7A --> G
     F7B --> G
     F8 --> G
     F8A --> G
+    F8B --> G
     F9 --> G
     F10 --> G
     F11 --> G
-    G -->|反复切换对象或证据| G1[主从分栏 / 工作台]
-    G -->|辅助内容轻量且短暂| G2[展开区 / Drawer]
-    G -->|内容可分享或需要宽空间| G3[独立页面]
-    G -->|短确认或少量输入| G4[Modal / Popconfirm]
-    G1 --> H[加入必要的辅助模型，形成页面类型与骨架]
+    G -->|Repeatedly switching objects or evidence| G1[Master-detail split / workbench]
+    G -->|Supporting content is light and transient| G2[Expandable section / Drawer]
+    G -->|Content is shareable or needs wide space| G3[Standalone page]
+    G -->|Short confirmation or minimal input| G4[Modal / Popconfirm]
+    G1 --> H[Add the necessary supporting models to form the page type and skeleton]
     G2 --> H
     G3 --> H
     G4 --> H
 ```
 
-禁止根据接口返回数组就选择表格，也禁止因为路由带 ID 就套用通用详情页。同一个领域对象在不同任务下可以有不同表达：Issue 在查询时是集合，在处理时是状态流程，在协作时是讨论流，在审计时是事件序列。
+Do not choose a table just because an API returns an array, and do not default to a generic detail page just because the route carries an ID. The same domain object can have different expressions under different tasks: an Issue is a collection when querying, a status flow when processing, a discussion thread when collaborating, and an event sequence when auditing.
 
-### 2.3 信息模型与表达骨架对照表
+### 2.3 Information model ↔ expression skeleton reference
 
-真正要区分的是**信息表达模式的骨架差异**，而不是业务名称。同一骨架在不同业务领域反复出现是合理的，不是页面设计的重复——不要为了“凑全”把同一种骨架在不同业务下的页面当成新类型重复沉淀。
+What actually needs distinguishing is the **structural difference in the expression skeleton**, not the business name. The same skeleton recurring across different business domains is expected, not duplication in page design — don't pad out "coverage" by treating the same skeleton applied to a different business as a new type worth documenting separately.
 
-对照成熟企业产品（GitHub、Jira/Atlassian、AWS Console、Stripe、Salesforce、Datadog、PagerDuty）常见形态，可以收敛为以下骨架，其余常见页面都是它们在具体领域的实例：
+Cross-referencing common forms in mature information-dense products (GitHub, Jira/Atlassian, AWS Console, Stripe, Salesforce, Datadog, PagerDuty), the following skeletons emerge; other common pages are domain-specific instances of them:
 
-| 信息模型 | 用户需要理解什么 | 表达骨架 | 首选组件组合 | 常见领域实例 |
+| Information model | What the user needs to understand | Expression skeleton | Preferred component combination | Common domain instances |
 |---|---|---|---|---|
-| 单个对象 | 身份、状态、属性、能力 | 分区详情 | `PageContainer` + `ProDescriptions` + `Tabs` | 发布单详情、应用详情 |
-| 集合 | 多个同类对象的差异 | 二维比较表 | `ProTable`（查询/排序/分页/批量/无匹配清除） | 发布单、账单、报表列表 |
-| 集合 | 从大量资源中发现并重新进入 | 目录与发现 | 搜索 + 分面筛选（`Select`/`TreeSelect`）+ `ProList` + 收藏/保存视图 | 组件服务目录 |
-| 层级 | 父子、包含、路径 | 层级树 | `Tree` + 面包屑 + 主从 `Table` | 组织架构、资源目录树 |
-| 关系网络 | 对象如何相互依赖或引用 | 关系列表 | 上游/下游邻接列表 + 影响传播提示；仅路径/传播是判断依据时才用图形 | 依赖拓扑 |
-| 过程与状态 | 当前在哪一步、下一步是什么 | 分步向导 | `Steps` + 分步表单 + 高危二次确认 + `Result` | 发布审批流程、创建向导 |
-| 过程与状态 | 为何停住、失败在哪一环 | 航迹下钻 | 阶段摘要 → 单步结果 → 原始日志渐进披露 | 链路追踪、审计下钻 |
-| 状态连续性 | 现在是否正常、影响范围多大 | 状态墙 | 全局 `Alert` + 组件状态列表 + 事件 `Timeline` | 服务状态页 |
-| 事件序列 | 先后发生了什么、由谁触发 | 事件时间线 | `Statistic` 摘要 + `Timeline` + 类型筛选 + `Collapse` 日志 | 审计日志、更新日志 |
-| 讨论与协作 | 谁提出什么、回应什么、形成何种结论 | 讨论流 | `List` + `Avatar` + `Typography` + 编辑器 | 评审意见、变更讨论 |
-| 文档与内容 | 连续阅读、定位章节、理解正文 | 连续文档 | `Typography` + `Anchor` 目录 + `Affix` | 知识库文档、规范手册 |
-| 版本与差异 | 什么发生改变、影响在哪里 | 并置对比 | 对比范围 + `Statistic` 摘要 + 并置 `Table` 或语义化差异视图 | 配置版本对比、发布差异 |
-| 空间与位置 | 对象位于哪里、边界和分布如何 | 地图 / 画布 | 原生页面外壳 + 专项可视化 | 机房拓扑、区域分布 |
-| 指标与分布 | 趋势、异常、构成和相关性 | 仪表盘 / 总览 | `Statistic` + `Line`/`Column` + 待办列表 + `Alert` | 交付总览、值班首页 |
-| 队列 | 下一件该处理什么、优先级如何 | 主从工作区 | 左队列（`ProList`/`ProTable`）+ 右详情 + `Drawer` | 问题工作台、审批收件箱 |
-| 配置与规则 | 当前策略、适用范围、冲突和结果 | 配置表单 | `ProForm` 分组 + `Transfer`/`Slider`/`Switch` + 影响 `Alert` | 发布策略、权限授权配置 |
+| Single object | Identity, status, attributes, capabilities | Sectioned detail | `PageContainer` + `ProDescriptions` + `Tabs` | Release detail, application detail |
+| Collection | Differences across many objects of the same kind | 2D comparison table | `ProTable` (query/sort/paginate/bulk actions/clear-no-match) | Release lists, billing, report lists |
+| Collection | Discover and re-enter from a large resource pool | Catalog and discovery | Search + faceted filters (`Select`/`TreeSelect`) + `ProList` + favorites/saved views | Component/service catalog |
+| Collection | Browsing and picking where the image is the recognition anchor | Card grid | Grid (`Row`/`Col` or `ProList` grid) + card + search/sort + `Pagination` | Product walls, asset libraries, template marketplaces |
+| Hierarchy | Parent-child, containment, path | Hierarchy tree | `Tree` + breadcrumb + master-detail `Table` | Org structure, resource directory trees |
+| Relationship network | How objects depend on or reference each other | Relationship list | Upstream/downstream adjacency list + impact-propagation hints; use a graph only when path/propagation itself is the judgment basis | Dependency topology |
+| Process & state | Which step it's on now, what's next | Step wizard | `Steps` + step-by-step form + high-risk double confirmation + `Result` | Release approval flow, creation wizard |
+| Process & state | Why it stalled, where it failed | Trace drill-down | Stage summary → per-step result → progressive disclosure of raw logs | Distributed tracing, audit drill-down |
+| Process & state | Which stage an object is in now, how it advances | Kanban | Column = stage + card carries identity and blockers + drag-to-act + in-column ordering | Requirement boards, hiring pipelines, content scheduling |
+| State continuity | Is it healthy now, how wide is the blast radius | Status wall | Global `Alert` + component status list + event `Timeline` | Service status pages |
+| Event sequence | What happened, in what order, triggered by whom | Event timeline | `Statistic` summary + `Timeline` + type filter + `Collapse` log | Audit logs, changelogs |
+| Discussion & collaboration | Who proposed what, how it was answered, what conclusion formed | Discussion thread | `List` + `Avatar` + `Typography` + editor | Review comments, change discussions |
+| Document & content | Continuous reading, section navigation, understanding body text | Continuous document | `Typography` + `Anchor` outline + `Affix` | Knowledge-base docs, spec handbooks |
+| Version & diff | What changed, where the impact lands | Side-by-side comparison | Comparison scope + `Statistic` summary + side-by-side `Table` or a semantic diff view | Config version comparison, release diffs |
+| Space & location | Where the object is, what its boundaries and distribution look like | Map / canvas | Native page shell + purpose-built visualization | Data-center topology, regional distribution |
+| Time & scheduling | When something is occupied by whom, when it conflicts | Calendar / scheduling | `Calendar` or a time grid + event blocks + conflict hints | Shift schedules, marketing calendars, resource booking |
+| Metrics & distribution | Trend, anomaly, composition, correlation | Dashboard / overview | `Statistic` + `Line`/`Column` + to-do list + `Alert` | Delivery overviews, on-call home pages |
+| Queue | What to work on next, what the priority is | Master-detail workspace | Left queue (`ProList`/`ProTable`) + right detail + `Drawer` | Issue workbenches, approval inboxes |
+| Configuration & rules | Current policy, applicable scope, conflicts and results | Configuration form | `ProForm` grouping + `Transfer`/`Slider`/`Switch` + impact `Alert` | Release policy, permission/authorization config |
 
-这些模型可以组合，但每页必须有一个主模型。辅助模型只能帮助理解或操作主模型，不能彼此争夺首屏。例如 Pull Request 可以用“变更对象”作为主模型，以讨论流、检查过程和文件差异作为平级视图；它不应被简化成一张属性详情卡。
+These models can be combined, but every page must have exactly one primary model. Supporting models may only aid understanding or manipulation of the primary model — they cannot compete for the first screen. For example, a Pull Request can use "changed object" as its primary model, with discussion thread, checks process, and file diff as peer views; it should not be reduced to a single attribute detail card. This repository's `fe-page-guide-antd-demo/` directory provides runnable domain instances for the skeletons above (see `fe-page-guide-antd-demo/README.md` for the mapping).
 
-### 2.4 表达模式的选择规则
+### 2.4 Rules for choosing an expression pattern
 
-- 需要跨对象逐列比较时用表格；只需识别和进入对象时用列表；结构顺序有意义时用树，不能一律表格化。
-- 需要理解发生顺序时用时间线；需要理解当前阶段和后续步骤时用 Steps；两者不能因为外观相近而互换。
-- 需要阅读和引用连续内容时保持文档结构，不把每段正文拆成 Card 或键值字段。
-- 需要理解多人观点及回应关系时保持讨论上下文，不把评论降维成普通操作日志。
-- 需要看“改变了什么”时直接表达前后差异，不让用户在两个详情页之间自行记忆比较。
-- 需要探索关系或空间位置时，只有关系拓扑本身影响判断才使用图形；否则用分组列表表达上下游更高效。
-- 原生组件能够准确表达时直接使用；没有合适原生表达时，允许实现领域专项视图。不得为了坚持“只用原生组件”而扭曲信息模型。
+- Use a table for field-by-field comparison across objects; use a list when the task is only to identify and enter an object; use a tree when the structural order is meaningful — don't force everything into a table.
+- Use a timeline to convey order of occurrence; use Steps to convey the current stage and subsequent steps; the two must not be swapped just because they look similar.
+- Use Kanban when objects advance through discrete stages and "moving" itself is the action; if columns are just different filter conditions, switch to view toggles or filters instead — don't disguise a filter as a stage with Kanban.
+- Use a calendar or time grid when the judgment depends on "is this time slot occupied, does it conflict"; use a timeline when only sequence matters — the two have different time semantics and are not interchangeable.
+- Preserve document structure when content needs continuous reading and referencing; don't break every paragraph into a Card or a key-value field.
+- Preserve discussion context when understanding multiple viewpoints and their replies; don't flatten comments into an undifferentiated operation log.
+- Express before/after diffs directly when the task is to see "what changed" — don't make the user memorize a comparison across two detail pages.
+- Use a graph to explore relationships or spatial position only when the topology itself affects judgment; otherwise a grouped list conveys upstream/downstream more efficiently.
+- Use native components directly wherever they express the need accurately; when there is no adequate native expression, a domain-specific view is allowed. Do not distort the information model just to insist on "native components only."
 
-### 2.5 页面外壳与层级
+### 2.5 Page shell and hierarchy
 
 ```text
-┌ 应用导航 ─────────────────────────────────────────────┐
-│ 面包屑 / 页面位置                                      │
-│ 页面标题 + 状态 + 简短说明                  [主操作]     │
+┌ App navigation ───────────────────────────────────────┐
+│ Breadcrumb / page location                            │
+│ Page title + status + short description    [Primary action] │
 ├───────────────────────────────────────────────────────┤
-│ 关键提示或待处理事项（仅在确有行动价值时出现）          │
+│ Key alert or pending item (only when it has action value)   │
 │                                                       │
-│ 查询 / 局部导航 / 工具栏                               │
-│ 主内容区                                               │
+│ Query / local navigation / toolbar                    │
+│ Primary content area                                   │
 │                                                       │
-│ 分页 / 结果摘要                                        │
+│ Pagination / result summary                            │
 └───────────────────────────────────────────────────────┘
 ```
 
-- 使用 `ProLayout` 承载应用级导航，`PageContainer` 承载页面标题、面包屑和内容边界；不要在业务页面重复造一套外壳。
-- 页面主内容保持稳定左对齐。数据、表单和长文本不使用居中排版；居中只用于短空状态、结果页等明确场景。
-- 标题区只放对象身份、状态、必要说明和主操作。统计卡、筛选表单、长描述不要挤进标题区。
-- 相关内容靠近，无关内容用间距和分组分开。优先用留白、标题和分隔线建立层级，Card 只表达真正独立的内容容器。
-- 页面级固定头部、底部操作条和悬浮控件不得遮挡内容或键盘焦点。
+- The app shell has three parts: app-level navigation, header, and footer. The header carries cross-page global context (persistently visible selectors like environment, organization) and global actions; the footer carries secondary information like version and data scope. Business pages must not reimplement these regions.
+- Use `ProLayout` for app-level navigation and `PageContainer` for the page title, breadcrumb, and content boundary — don't rebuild a shell inside a business page.
+- Keep primary page content stably left-aligned. Don't center data, forms, or long text; centering is only for short empty states, result pages, and similarly explicit scenarios.
+- The title region holds only object identity, status, necessary description, and the primary action. Don't crowd stat cards, filter forms, or long descriptions into the title region.
+- Keep related content close together and separate unrelated content with spacing and grouping. Prefer whitespace, headings, and dividers to establish hierarchy; a Card should only represent a genuinely independent content container — never nest a Card inside a Card. Group form fields internally with a group heading or divider instead.
+- Sticky page headers, bottom action bars, and floating controls must never obscure content or keyboard focus.
 
-层级限制：
+Hierarchy constraints:
 
-- 应用导航表达跨对象模块；页面内 Tab 表达同一对象的平级视图；局部锚点表达长页面章节。
-- 同一可见区域避免同时出现三套竞争的导航（例如侧栏 + 顶部 Tab + Card 内 Tab）。
-- Modal、Drawer 不是新的导航层。需要复制链接、浏览历史、复杂对比或持续工作时，应使用独立路由。
-- 面包屑一般不超过 4 层；过深时优先修正信息架构，而不是截断到无法理解。
+- App navigation expresses cross-object modules; in-page Tabs express peer views of the same object; local anchors express sections of a long page.
+- Avoid having three competing navigation systems visible in the same region at once (e.g. sidebar + top Tabs + Tabs inside a Card).
+- Modal and Drawer are not a new navigation layer. When link-copying, browsing history, complex comparison, or ongoing work is needed, use a standalone route instead.
+- Breadcrumbs generally shouldn't exceed 4 levels; when they run deeper, fix the information architecture rather than truncating it into something unreadable.
 
-一个路由应有一个主任务和主信息模型，但可以组合多种表达模式。GitHub 的仓库、Pull Request、Actions 和 Projects 页面形态不同，原因正是它们分别围绕文档与层级、变更与讨论、过程与日志、工作流与看板组织，而不是统一套用列表—详情。
+A route should have one primary task and one primary information model, but it can combine multiple expression patterns. GitHub's Repository, Pull Request, Actions, and Projects pages look different precisely because they're organized around document-and-hierarchy, change-and-discussion, process-and-log, and workflow-and-kanban respectively — not because they all default to a uniform list-detail pattern.
 
 ---
 
-## 三、Workflow 2：页面编排
+## 3. Workflow 2: Page orchestration
 
 ```mermaid
 flowchart TD
-    A[从页面骨架列出身份、状态、属性、关系、变化、证据、动作和反馈] --> B[删除不服务主任务的信息]
-    B --> C[按必需、高频、低频和按需分级]
-    C --> D[按定向、理解、判断、操作、反馈排列]
-    D --> E[确定页面身份、异常或状态、主任务、支撑信息、次要操作的注意力顺序]
-    E --> F{使用特征与风险}
-    F -->|高频、熟练、批量| F1[提高有效密度和连续处理效率]
-    F -->|低频、首次、规则复杂| F2[增加说明、示例和渐进披露]
-    F -->|高风险、不可逆| F3[展示影响并降低动作密度]
-    F1 --> G[补齐加载、空、失败、权限、提交中和完成后的反馈]
+    A[List identity, status, attributes, relationships, changes, evidence, actions, and feedback from the page skeleton] --> B[Remove information that doesn't serve the primary task]
+    B --> C[Tier by required, high-frequency, low-frequency, and on-demand]
+    C --> D[Order by orient, understand, judge, act, feedback]
+    D --> E[Determine the attention order: page identity, exception/status, primary task, supporting info, secondary actions]
+    E --> F{Usage pattern and risk}
+    F -->|High frequency, expert, bulk| F1[Increase effective density and continuous-processing efficiency]
+    F -->|Low frequency, first time, complex rules| F2[Add explanations, examples, and progressive disclosure]
+    F -->|High risk, irreversible| F3[Show impact and lower the density of actions]
+    F1 --> G[Fill in feedback for loading, empty, failure, permission, submitting, and completed states]
     F2 --> G
     F3 --> G
-    G --> H{是否需要用户跨区记忆、重复查找或重新输入？}
-    H -->|是| H1[调整顺序、合并上下文或返回 Workflow 1 改骨架]
-    H -->|否| I[形成页面编排与交互说明]
+    G --> H{Does the user need to remember across regions, look things up repeatedly, or re-enter data?}
+    H -->|Yes| H1[Adjust order, merge context, or return to Workflow 1 to change the skeleton]
+    H -->|No| I[Finalize page orchestration and interaction spec]
     H1 --> D
 ```
 
-### 3.1 信息组成与默认位置
+### 3.1 Information composition and default placement
 
-页面从以下信息中按任务取舍，而不是按接口字段顺序全量展示：
+Select what a page shows from the following information categories based on the task, not by dumping every API field in order:
 
-| 信息 | 回答的问题 | 组织要求 | 默认位置 | 不应放置的位置 |
+| Information | Question it answers | Organization requirement | Default location | Where it must not go |
 |---|---|---|---|---|
-| 身份 | 这是什么 | 名称、稳定标识和所属上下文靠近呈现 | 页面标题、对象摘要 | 深层 Tab 或表格末列 |
-| 状态 | 现在怎么样 | 当前值、原因、更新时间和可达下一状态按需关联 | 标题区、摘要区、状态工作区 | 只能在详情字段中查到 |
-| 属性 | 它有哪些特征 | 按用户理解分组，不按数据库或 DTO 排列 | 详情主体、分组字段、比较表 | 按接口字段顺序平铺 |
-| 关系 | 它和谁有关 | 区分归属、依赖、引用、影响范围等不同语义 | 关联区、邻接列表、独立 Tab | 与属性字段混成一张大表 |
-| 变化 | 与之前相比发生了什么 | 表达差异、操作者、时间和影响，而不只显示最终值 | 差异区、时间线、版本对比 | 只展示变更后的最终值 |
-| 证据 | 为什么能得出这个判断 | 将日志、检查结果、来源或规则放在判断附近 | 判断结果附近、可展开日志 | 远离结论的独立日志页 |
-| 动作 | 用户现在能做什么 | 动作靠近作用对象，层级反映频率、价值和风险 | 主动作在标题区或首屏；次要动作在局部工具栏 | 主动作藏进“更多”或页面底部 |
-| 反馈 | 动作产生了什么结果 | 说明成功、部分成功、失败及下一步，维持任务上下文 | 动作附近、结果区 | 脱离上下文的全局提示 |
+| Identity | What is this | Name, stable identifier, and owning context shown close together | Page title, object summary | A deep Tab or the last column of a table |
+| Status | How is it now | Current value, reason, update time, and reachable next states linked as needed | Title region, summary region, status workspace | Only discoverable in detail fields |
+| Attributes | What are its characteristics | Grouped by user understanding, not laid out by database or DTO order | Detail body, grouped fields, comparison table | Flattened in API-field order |
+| Relationships | Who is it related to | Distinguish ownership, dependency, reference, and impact scope as different semantics | Relations region, adjacency list, standalone Tab | Mixed with attribute fields into one big table |
+| Changes | What changed compared to before | Express the diff, the actor, the time, and the impact — not just the final value | Diff region, timeline, version comparison | Showing only the final value after the change |
+| Evidence | Why this judgment can be drawn | Place logs, check results, sources, or rules near the judgment | Near the judgment result, expandable log | A standalone log page far from the conclusion |
+| Actions | What the user can do now | Keep actions close to the object they act on; hierarchy reflects frequency, value, and risk | Primary action in the title region or first screen; secondary actions in a local toolbar | Primary action buried in "more" or the page footer |
+| Feedback | What result the action produced | State success, partial success, failure, and next steps while preserving task context | Near the action, in a result region | A global toast detached from context |
 
-区域分配还应遵循以下规则：
+Region assignment should also follow these rules:
 
-- 应用级导航只表达跨对象模块；页面标题区只表达当前对象身份、状态、必要说明和主动作。
-- 同一对象的平级信息使用 Tab；长内容内部章节使用锚点；不要让侧栏、顶部 Tab 和 Card 内 Tab 同时承担同一层导航。
-- 判断所需的信息靠近判断结果；原始日志、完整请求和低频字段默认渐进披露，不与摘要争夺首屏空间。
-- 关系、变化和证据如果会改变用户决策，应进入主内容；只是补充背景时才放入次级区域。
-- 一个信息只保留一个权威展示位置。其他位置只能展示摘要、状态或入口，并明确跳转到权威位置。
-- 需要分享、恢复、宽空间、独立权限或持续工作的内容使用独立路由；短确认和轻量上下文才使用 Modal / Drawer。
-- 导航名称优先使用稳定的业务对象，如“发布单”“应用”“成员”，不要使用“综合管理”等空泛名称。
-- 页面标题说明当前对象或任务；面包屑说明位置；Tab 说明同一对象的不同信息侧面。三者不要重复同一句话。
-- 权限影响动作时，优先隐藏用户永远无权知道的能力；对用户可能获得或暂时缺少的权限，保留禁用入口并解释原因和申请路径。
+- App-level navigation expresses cross-object modules only; the page title region expresses only the current object's identity, status, necessary description, and primary action.
+- Use Tabs for peer information about the same object; use anchors for sections within long content; don't let a sidebar, top Tabs, and Tabs inside a Card all carry the same layer of navigation at once.
+- Keep information needed for a judgment close to that judgment's result; raw logs, full requests, and low-frequency fields default to progressive disclosure and shouldn't compete with the summary for first-screen space.
+- Relationships, changes, and evidence should go into the primary content if they change the user's decision; move them to a secondary region if they're only background.
+- Each piece of information keeps exactly one authoritative display location. Other locations may only show a summary, a status, or an entry point with a clear link to the authoritative location.
+- Use a standalone route for content that needs sharing, recovery, wide space, independent permissions, or ongoing work; reserve Modal/Drawer for short confirmations and lightweight context.
+- Prefer stable business objects for navigation names — "Release," "Application," "Member" — not vague names like "General Management."
+- The page title describes the current object or task; the breadcrumb describes location; Tabs describe different information facets of the same object. Don't repeat the same sentence across all three.
+- When permissions affect an action, hide capabilities the user can never obtain; for permissions the user might gain or is temporarily missing, keep a disabled entry point and explain the reason and how to request access.
 
-### 3.2 阅读顺序与注意力
+### 3.2 Reading order and attention
 
-默认阅读顺序应保持为：
+The default reading order should be kept as:
 
 ```text
-页面身份
-→ 当前状态 / 异常
-→ 主任务与主动作
-→ 判断所需的核心信息
-→ 关系、变化与证据
-→ 次要信息与低频操作
+Page identity
+→ Current status / exception
+→ Primary task and primary action
+→ Core information needed for judgment
+→ Relationships, changes, and evidence
+→ Secondary information and low-frequency actions
 ```
 
-落到常见页面上，默认区域顺序是这一顺序的实例，不是可套用的模板：
+Applied to common pages, the default region order is an instance of this sequence, not a template to be pasted in:
 
-| 常见页面 | 主要任务 | 默认区域顺序 |
+| Common page | Primary task | Default region order |
 |---|---|---|
-| 总览页 | 发现异常、理解范围、进入任务 | 摘要 → 待处理/异常 → 趋势 → 最近活动 |
-| 列表页 | 定位、比较和批量处理对象 | 标题/主操作 → 查询 → 表格/列表 → 分页 |
-| 资源目录/发现页 | 查找、发现和重新进入大量资源 | 视图导航 → 搜索/分面筛选 → 资源结果 → 保存视图 |
-| 详情页 | 判断单个对象并执行动作 | 身份/状态/主操作 → 核心属性 → 关系/历史 |
-| 创建/编辑页 | 准确录入或修改信息 | 目标说明 → 分组表单 → 校验摘要 → 提交区 |
-| 分步流程 | 完成有依赖的长任务 | 步骤与进度 → 当前步骤 → 结果确认 |
-| 工作台 | 高频跨对象处理任务 | 队列/导航 → 主工作区 → 上下文详情/操作 |
-| 文档页 | 连续阅读、理解与引用内容 | 标题/元信息 → 目录 → 正文 → 关联内容 |
-| 活动页 | 追溯事件或协作过程 | 状态摘要 → 时间线/讨论流 → 输入与动作 |
-| 对比页 | 理解版本、对象或策略之间的变化 | 对比范围 → 差异摘要 → 差异本体 → 处理动作 |
-| 层级页 | 浏览和操作目录、组织或依赖结构 | 路径/范围 → 树或主从结构 → 当前节点内容 |
+| Overview page | Spot anomalies, understand scope, enter a task | Summary → pending/anomalies → trend → recent activity |
+| List page | Locate, compare, and bulk-process objects | Title/primary action → query → table/list → pagination |
+| Catalog/discovery page | Find, discover, and re-enter a large set of resources | View navigation → search/faceted filters → resource results → saved views |
+| Detail page | Judge a single object and act on it | Identity/status/primary action → core attributes → relationships/history |
+| Create/edit page | Enter or modify information accurately | Goal statement → grouped form → validation summary → submit region |
+| Step flow | Complete a long task with dependencies | Steps and progress → current step → result confirmation |
+| Workbench | High-frequency cross-object processing task | Queue/navigation → primary work area → contextual detail/actions |
+| Document page | Continuous reading, understanding, and referencing content | Title/metadata → table of contents → body → related content |
+| Activity page | Trace an event or collaboration process | Status summary → timeline/discussion thread → input and actions |
+| Comparison page | Understand what changed between versions, objects, or policies | Comparison scope → diff summary → diff body → processing actions |
+| Hierarchy page | Browse and operate on a catalog, org, or dependency structure | Path/scope → tree or master-detail structure → current node's content |
 
-注意力分配规则：
+Attention-allocation rules:
 
-- 一个页面只有一个视觉主标题（通常为 `h1`），章节标题按语义顺序递进，不按字号假装层级。
-- 一个任务区域最多一个 `type="primary"` 按钮。主按钮代表当前最可能且最有价值的下一步，不代表“最危险”或“最永久”。
-- 危险操作使用危险语义，但不应长期占据最高视觉权重；通常放入次要操作或更多菜单。
-- 警告、错误色只用于需要用户关注的状态。正常状态不应铺满绿色，状态可用短文本、图标和低强度标签共同表达。
-- Badge、Tag、Alert、Notification 都会消耗注意力。只有信息会改变用户判断或动作时才强调。
+- A page has exactly one visual primary heading (usually `h1`); section headings progress by semantic order, not by font size pretending to be hierarchy.
+- At most one `type="primary"` button per task region. The primary button represents the current most-likely, highest-value next step — not "most dangerous" or "most permanent."
+- Dangerous actions use dangerous semantics but shouldn't permanently hold the highest visual weight; they usually belong in secondary actions or a "more" menu.
+- Warning and error colors are only for states that genuinely need the user's attention. A normal state shouldn't be blanketed in green; status can be conveyed with short text, an icon, and a low-intensity tag together.
+- Badge, Tag, Alert, and Notification all consume attention. Only emphasize information that would change the user's judgment or action.
 
-### 3.3 信息密度
+### 3.3 Information density
 
-信息密度不是单位面积内放了多少控件，而是用户在一个视野内能够理解和用于判断的有效信息量。压缩间距只会提高视觉密度；只有减少无关信息、建立比较关系并降低来回查找，才会提高有效信息密度。
+Information density isn't how many controls fit per unit area — it's how much effective, judgment-usable information the user can take in within one field of view. Tightening spacing only raises visual density; effective information density only rises by removing irrelevant information, establishing comparison relationships, and reducing the need to look back and forth.
 
-| 密度 | 适用场景 | 设计侧重 |
+| Density | Where it applies | Design emphasis |
 |---|---|---|
-| 舒展 | 首次使用、低频配置、高风险确认 | 更多说明、更大分组间距、清晰影响预览 |
-| 标准 | 大多数列表、详情和表单 | 可扫描性与单位屏信息量平衡 |
-| 紧凑 | 监控、运营、审计等高频专家工作台 | 稳定列宽、短文案、键盘效率、可保存视图 |
+| Spacious | First-time use, low-frequency configuration, high-risk confirmation | More explanation, larger group spacing, a clear impact preview |
+| Standard | Most lists, details, and forms | Balance scannability against information per screen |
+| Compact | High-frequency expert workbenches — monitoring, ops, audit | Stable column widths, short copy, keyboard efficiency, saveable views |
 
-- 密度不是把字体和点击区域一起缩小。可以收紧容器留白和行距，但正文可读性、焦点和命中区域仍须达标。
-- 同一页面最多使用两个相邻密度级别，例如标准页面中的紧凑表格；不要让每个区域各用一套尺度。
-- 对专家用户优先提供列管理、保存视图、批量操作和快捷键，而不是无差别展示更多内容。
+- Density isn't shrinking font size and hit targets together. You can tighten container whitespace and line height, but body readability, focus, and hit-target size must still meet the bar.
+- Use at most two adjacent density levels on one page — e.g., a compact table inside a standard page; don't let every region invent its own scale.
+- For expert users, prefer column management, saved views, bulk actions, and shortcuts over indiscriminately showing more content.
 
-页面不同区域应承担不同密度：
+Different page regions should carry different density:
 
-| 区域 | 推荐密度 | 原因 |
+| Region | Recommended density | Why |
 |---|---|---|
-| 应用导航 | 低 | 帮助定向，不能和业务内容争夺注意力 |
-| 页面标题与对象摘要 | 低～中 | 快速确认对象、范围、状态和主动作 |
-| 查询与视图控制 | 中 | 用较少空间表达当前观察范围 |
-| 核心比较/工作区域 | 中～高 | 承载扫描、对比、编辑或连续处理 |
-| 证据与上下文 | 中 | 在需要判断时提供，不应淹没主工作区 |
-| 最终动作与反馈 | 低 | 保持位置稳定，避免误操作和遗漏结果 |
+| App navigation | Low | Helps orientation; must not compete with business content for attention |
+| Page title and object summary | Low–medium | Quickly confirm the object, scope, status, and primary action |
+| Query and view controls | Medium | Convey the current observation scope with minimal space |
+| Core comparison/work area | Medium–high | Carries scanning, comparison, editing, or continuous processing |
+| Evidence and context | Medium | Provided when a judgment needs it; must not drown out the primary work area |
+| Final actions and feedback | Low | Stay positionally stable to avoid mis-taps and missed results |
 
-### 3.4 用默认视觉语言承载层级
+### 3.4 Carrying hierarchy through the default visual language
 
-- 默认使用 Ant Design 的字体、字号、行高、圆角、阴影、颜色和间距，不为单个页面建立第二套视觉系统。
-- 正文行长宜控制在约 45～80 个字符；说明文字过长时限制内容宽度，不让其横跨整个大屏。
-- 表格数字按位数对齐并显示单位；名称和自然语言左对齐；操作通常右对齐。相同含义保持相同格式。
-- 次要信息可以降低视觉权重，但仍须满足对比度；不要用过浅灰色代替信息层级设计。
-- 优先通过标题层级、内容顺序、分组、组件语义和渐进披露解决层级问题，不用自定义颜色与 CSS 补救。
-- 只有全产品品牌要求、明确业务语义或默认样式不满足可访问性时才调整 Token，并在应用级统一处理。
+- Use Ant Design's default typography, sizes, line height, corner radius, shadows, colors, and spacing; don't build a second visual system for a single page.
+- Express visual hierarchy exclusively through the components' own capabilities — never hand-write font size, weight, or color values in business pages. Look up the need in this table before writing anything:
 
-### 3.5 导航、查询与状态保持
+| Want to express | Use this component capability | Don't write this |
+|---|---|---|
+| More/less important | `Typography.Text`'s `strong`, `type="secondary"` | `fontWeight: 600`, `fontSize: 15` |
+| A more compact block | The component's `size="small"` (`Card`, `List`, `Table`, `Form`, etc.) | Overriding component padding, line height |
+| Semantic status color | `Tag`/`Alert`/`Badge`'s `color`, `type`, `status` | A hardcoded value like `#faad14` |
+| Headings and sections | `Typography.Title`'s `level`, `PageContainer`'s title region | Faking heading hierarchy with font size |
+| In-line alignment and distribution | `Flex`, `Space`, `Row`/`Col` | A hand-written `display: flex` `div` |
+| Empty result | `Empty` | A centered gray paragraph |
+| When a color genuinely must be picked | `theme.useToken()`'s semantic tokens | A hardcoded hex value |
 
-导航：
+- Only draw custom visuals (purpose-built visualizations, canvases) when a native component cannot carry the information substance; even then, the custom part's color, corner radius, and spacing should still come from the Design Token — the shell, cards, buttons, and tags remain native components.
+- Inline `style` is only for layout sizing (width/height, margins, max line length, scroll-region size) — never for font, color, or decoration.
+- Never remove the focus outline (`outline: none`) or reduce contrast for the sake of appearance; visible focus and contrast are a baseline, not a negotiable visual preference.
+- Keep body line length around 45–80 characters; constrain content width for long explanatory text rather than letting it span an entire wide screen.
+- Align table numbers by digit and show units; left-align names and natural language; right-align actions in general. Keep the same format for the same meaning.
+- Secondary information can carry lower visual weight but must still meet contrast requirements; don't substitute an overly light gray for real hierarchy design.
+- Prefer solving hierarchy problems through heading level, content order, grouping, component semantics, and progressive disclosure — not custom colors and CSS fixes.
+- Only adjust tokens when there's a product-wide brand requirement, an explicit business semantic, or the default style fails accessibility — and handle it uniformly at the app level.
 
-- 菜单按用户心智中的业务对象和工作流组织，不按微服务、前端包或团队归属组织。
-- 同一层菜单尽量使用同一抽象级别和词性；名称短而具体，避免“管理”“中心”“平台”重复堆叠。
-- 当前菜单、父级位置和页面标题必须一致；刷新和深链接进入时仍能正确高亮。
-- 频繁切换的工作上下文（组织、空间、项目、环境）应有明确选择器，并持续显示当前值。
-- 切换上下文会丢失未保存内容或改变数据范围时，必须提前提示。
+### 3.5 Navigation, search, and state persistence
 
-搜索与筛选：
+Navigation:
 
-- 单一模糊关键词用搜索框；多个结构化条件用查询表单；不要把结构化筛选伪装成一个万能搜索框。
-- 高频筛选默认展开，低频筛选折叠到“更多筛选”；当前生效条件即使折叠也必须可见、可单独清除。
-- “查询”执行条件，“重置”恢复产品默认条件；两者不能依赖用户猜测。
-- 查询后展示结果数量；无结果时说明是“没有数据”还是“当前条件无匹配”，后者提供清除筛选入口。
-- 搜索触发策略保持一致：明确查询通常支持 Enter；即时筛选需防抖并反馈加载状态。
-- 用户需要返回、分享或刷新时保留查询状态；可序列化状态优先进入 URL，不可序列化草稿进入受控本地状态。
+- Organize menus around the business objects and workflows in the user's mental model, not by microservice, frontend package, or team ownership.
+- Keep the same abstraction level and part of speech within one menu tier; use short, specific names and avoid stacking vague words like "management," "center," "platform."
+- The current menu, parent location, and page title must agree, and must still highlight correctly after a refresh or deep link.
+- Frequently switched work contexts (organization, workspace, project, environment) need an explicit selector that keeps showing the current value.
+- Warn in advance when switching context would lose unsaved content or change the data scope.
 
-### 3.6 编排反模式
+Search and filtering:
 
-- 把接口返回的全部字段直接变成详情字段，导致身份、状态、关系和证据没有层级。
-- 用大量 Card、颜色或装饰间距制造层级，却没有说明用户先看什么、据此做什么判断。
-- 把低频操作放进标题区，或让多个操作同时使用主按钮样式。
-- 把状态、属性、关系和变化混在一张表中，用户无法建立比较关系。
-- 用图形展示关系，但用户实际只需要查名称、状态或邻接对象；此时优先使用列表或表格。
-- 用 Modal / Drawer 承载长流程、复杂对比或需要复制链接的内容。
-- 在标题、摘要、Tab、表格中重复展示同一信息，却没有不同语义或新的判断价值。
+- Use a search box for a single fuzzy keyword; use a query form for multiple structured conditions — don't disguise structured filters as one all-purpose search box.
+- Expand high-frequency filters by default and collapse low-frequency ones into "more filters"; currently active conditions must stay visible and individually clearable even when collapsed.
+- "Search" applies the conditions; "Reset" restores the product's default conditions — neither should rely on the user guessing.
+- Show the result count after a query; when there are no results, say whether it's "no data" or "no match for the current conditions" — the latter should offer a clear-filters entry.
+- Keep the search trigger strategy consistent: an explicit query usually supports Enter; instant filtering needs debouncing and loading-state feedback.
+- Preserve query state when the user might go back, share, or refresh; put serializable state in the URL first, and put non-serializable drafts into controlled local state.
+
+### 3.6 Orchestration anti-patterns
+
+- Turning every field an API returns directly into a detail field, so identity, status, relationships, and evidence end up with no hierarchy.
+- Manufacturing hierarchy with a pile of Cards, colors, or decorative spacing without conveying what the user should look at first and what judgment to draw from it.
+- Putting low-frequency actions in the title region, or letting multiple actions share the primary-button style at once.
+- Mixing status, attributes, relationships, and changes into one table so the user can't build a comparison.
+- Using a graph to show relationships when the user actually just needs to look up names, statuses, or adjacent objects — prefer a list or table instead.
+- Using Modal/Drawer to carry a long flow, a complex comparison, or content that needs a copyable link.
+- Repeating the same information across the title, summary, Tab, and table without any new semantics or judgment value.
+- Hand-writing font size, weight, color values, or a `display: flex` container in a business page, building up a second scale outside the default visual language (see 3.4 for the correct approach).
 
 ---
 
-## 四、Workflow 3：实现验收
+## 4. Workflow 3: Implementation acceptance
 
 ```mermaid
 flowchart TD
-    A[把页面骨架和表达模式映射到原生 Ant Design / ProComponents] --> B{原生能力能否准确表达？}
-    B -->|能| B1[使用公开 API 和默认 Token]
-    B -->|不能| B2[只为信息本体增加必要的领域组件]
-    B1 --> C[实现数据、权限、表单和 URL 状态]
+    A[Map the page skeleton and expression pattern onto native Ant Design / ProComponents] --> B{Can native capabilities express it accurately?}
+    B -->|Yes| B1[Use the public API and default tokens]
+    B -->|No| B2[Add only the domain components necessary for the information substance]
+    B1 --> C[Implement data, permissions, form, and URL state]
     B2 --> C
-    C --> D[验证语义、键盘、焦点、状态通知和颜色冗余编码]
-    D --> E[验证窄视口、桌面、文本放大和页面缩放]
-    E --> F[验证数据规模、性能、安全、国际化和错误恢复]
-    F --> G[运行 lint、typecheck、test、build、截图和人工任务检查]
-    G --> H{问题属于哪一层？}
-    H -->|实现缺陷| A
-    H -->|页面编排问题| I[返回 Workflow 2]
-    H -->|主模型或页面骨架错误| J[返回 Workflow 1]
-    H -->|全部通过| K[形成验收记录并交付]
+    C --> D[Verify semantics, keyboard, focus, status announcements, and non-color-only encoding]
+    D --> E[Verify narrow viewport, desktop, text zoom, and page zoom]
+    E --> F[Verify data scale, performance, security, i18n, and error recovery]
+    F --> G[Run lint, typecheck, test, build, screenshots, and manual task checks]
+    G --> H{Which layer does the issue belong to?}
+    H -->|Implementation defect| A
+    H -->|Orchestration issue| I[Return to Workflow 2]
+    H -->|Primary model or skeleton error| J[Return to Workflow 1]
+    H -->|All passed| K[Produce the acceptance record and deliver]
 ```
 
-### 4.1 组件映射总则
+### 4.1 General component-mapping rules
 
-先确定信息关系和页面区域，再选择实现组件；不要从“想用哪个组件”反推页面结构。外壳一律 `ProLayout` + `PageContainer`；二维内容用 `ProTable`/`Table`，稳定键值用 `ProDescriptions`，录入用 `ProForm`（简单表单用 `Form`），连续正文用 `Typography`，顺序表达用 `Steps`/`Timeline`（两者不可互换）；弹层只用于短确认/轻量上下文，长流程宽内容走独立路由；图表总是配表格或文本替代表达。
+Determine the information relationships and page regions first, then choose implementation components — don't reverse-engineer page structure from "which component do I want to use." The shell is always `ProLayout` + `PageContainer`; use `ProTable`/`Table` for 2D content, `ProDescriptions` for stable key-value data, `ProForm` for entry (`Form` for a simple form), `Typography` for continuous body text, and `Steps`/`Timeline` for sequential expression (the two are not interchangeable). Use overlays only for short confirmations or lightweight context; long flows and wide content go to a standalone route. Always pair a chart with a table or a text-based alternative.
 
-### 4.2 集合与比较
+### 4.2 Collections and comparison
 
-企业信息系统的表格用于比较，不是把对象全部字段平铺出来。
+On an information-dense page, a table exists for comparison, not to lay out every field of an object.
 
-- 每行必须有稳定、唯一的 `rowKey`；不要使用数组下标。
-- 第一列优先承担对象识别，通常是名称/编号并链接详情；相邻列放影响判断的状态和关键属性。
-- 默认只展示完成主任务需要的列。低频字段放列设置、详情页或展开区，不靠无限横向滚动解决。
-- 默认排序必须可解释并稳定；服务端分页时，筛选、排序与分页也必须由服务端统一执行。
-- 文本溢出应保留可访问的完整值（展开、详情或明确 Tooltip）；关键身份和状态不能只在 hover 后看见。
-- 空值统一显示 `-` 或明确业务文案；`0`、`false`、空数组与未知值不得混为一谈。
-- 时间明确时区和格式；相对时间适合近期感知，同时提供精确时间。
-- 操作列保持位置稳定。高频安全动作直接展示 1～2 个，其余进入“更多”；图标动作必须有可访问名称。
-- 批量操作仅在选择后出现，并持续显示已选数量、跨页选择范围和清除入口。
-- 删除、停用、覆盖等动作在确认中写明对象、数量和后果；高风险操作不得只问“是否确认”。
-- 表格加载时保留表头和布局，避免跳动；刷新不要无条件清空已有数据。失败时保留可用旧数据并标明未更新，或明确提供重试。
+- Every row needs a stable, unique `rowKey`; never use the array index.
+- The first column should carry object identification — usually a name/ID linking to the detail — with adjacent columns holding judgment-relevant status and key attributes.
+- Show only the columns needed for the primary task by default. Put low-frequency fields in column settings, the detail page, or an expandable region — don't rely on infinite horizontal scrolling.
+- The default sort must be explainable and stable; with server-side pagination, filtering and sorting must also be executed uniformly on the server.
+- Preserve the full, accessible value on text overflow (expand, detail, or an explicit tooltip); key identity and status must not be visible only on hover.
+- Show empty values consistently as `-` or explicit business copy; don't conflate `0`, `false`, an empty array, and unknown.
+- Make timezone and format explicit for times; relative time is good for recent-ness, but also provide the precise time.
+- Keep the action column's position stable. Show 1–2 high-frequency, safe actions directly; put the rest under "more"; icon-only actions must have an accessible name.
+- Bulk actions appear only after a selection, and must keep showing the selected count, the cross-page selection scope, and a clear-selection entry.
+- Confirmations for delete, disable, overwrite, and similar actions must state the object, the count, and the consequence — a high-risk action must not just ask "Are you sure?"
+- Keep the header and layout in place while a table loads to avoid layout jumps; don't unconditionally clear existing data on refresh. On failure, keep usable stale data and mark it as stale, or offer an explicit retry.
 
-使用 `ProTable` 时：
+When using `ProTable`:
 
-- `columns` 同时承担查询和展示配置，但不要因此让每个可展示字段都默认进入查询区。
-- `valueType`、`valueEnum`、`renderText` 等声明式能力能表达需求时优先使用，复杂业务展示再使用 `render`。
-- 统一处理 `request` 的分页、排序、筛选、错误与响应适配，不在每张表重复一套协议转换。
-- 列设置和密度可持久化，但字段权限变化后必须清理失效配置，并提供恢复默认。
-- 开启固定列、虚拟滚动、可编辑单元格前，验证键盘操作、缩放、长文本和性能；功能存在不等于默认启用。
+- `columns` configures both query and display, but that doesn't mean every displayable field should default into the query region.
+- Prefer declarative capabilities like `valueType`, `valueEnum`, and `renderText` when they can express the need; reach for `render` only for complex business display.
+- Handle `request`'s pagination, sorting, filtering, error, and response adaptation uniformly — don't repeat a protocol-conversion layer in every table.
+- Column settings and density can be persisted, but stale configuration must be cleaned up after a field's permissions change, with a restore-defaults option provided.
+- Before enabling fixed columns, virtual scrolling, or editable cells, verify keyboard operation, zoom, long text, and performance — a feature existing doesn't mean it should be on by default.
 
-### 4.3 详情
+### 4.3 Card grid
 
-- 详情头部先展示对象名称、稳定 ID、状态和关键动作，再展示属性。
-- `ProDescriptions` 适合稳定的键值信息；有关联、顺序或变化的信息使用列表、时间线或表格。
-- 属性按业务含义分组，不按接口返回顺序排列；空字段不必全部占位，但关键字段即使为空也应显示。
-- 编辑后返回详情时保持原来的 Tab、滚动上下文或来源路径。
+- Use a card grid only when the image itself is the recognition anchor; when the image is merely decorative, use a table or list instead — don't break apart comparable fields for the sake of appearance.
+- Keep cover images at a consistent aspect ratio with a placeholder; loading and missing images must not change the card's height and cause the grid to jump.
+- Put only recognition- and initial-screening-relevant information on the card: a name, one or two key attributes, one status signal. Full attributes belong in the detail.
+- Let the grid adjust its column count by viewport while keeping same-row cards the same height; truncated overflow text still needs an accessible way to reach the full value.
+- Use the same search, filter, sort, and pagination semantics and URL state as a table — don't lose recoverable query state just because the layout switched to a grid.
+- On no results, state whether it's "no data" or "no match for the current conditions," and offer a clear-filters entry for the latter.
 
-### 4.4 层级与关系
+### 4.4 Detail
 
-- 树表达稳定的父子或包含关系；面包屑表达当前位置；两者可以配合，但不能承担彼此职责。
-- 默认展开到足以定向的层级，保留用户展开状态；大型树按需加载，并让搜索结果能回到原层级上下文。
-- 同一节点同时存在“包含”“依赖”“引用”等关系时，不要强塞进一棵树。按关系语义分区或提供独立视图。
-- 关系图仅用于路径、拓扑或影响传播本身是判断依据的场景；若用户主要是查名称和状态，邻接列表通常更高效。
-- 点击节点后需要反复浏览同级对象时使用主从结构并保留树位置；只偶尔查看详情时进入独立路由。
+- Show the object's name, stable ID, status, and key actions in the detail header before its attributes.
+- `ProDescriptions` suits stable key-value information; use a list, timeline, or table for information that has relationships, order, or change.
+- Group attributes by business meaning, not by API response order; empty fields don't all need placeholders, but key fields should still show even when empty.
+- Preserve the original Tab, scroll context, or source route when returning to the detail after an edit.
 
-### 4.5 过程、事件与讨论
+### 4.5 Hierarchy and relationships
 
-- `Steps` 表达预期流程和当前位置，`Timeline` 表达已经发生的事件，日志表达系统原始执行记录；三者不能相互代替。
-- 过程页面应同时呈现当前状态、阻塞原因、责任主体、下一步和允许动作，而不只显示一个进度百分比。
-- 事件流按时间组织，每项明确操作者、动作、对象、结果和时间；支持按事件类型筛选时仍保持原始顺序可恢复。
-- 讨论流保留发言者、时间、引用对象、回复关系和编辑状态；系统事件降低权重，但不能与人的观点混成无差别文本。
-- 自动化执行可用“阶段摘要 → 单步结果 → 原始日志”渐进展开，默认先暴露定位失败所需的信息。
+- A tree expresses a stable parent-child or containment relationship; a breadcrumb expresses the current location. They can work together, but neither should take over the other's job.
+- Expand by default only to the level needed for orientation, and preserve the user's expanded state; large trees should load on demand, and search results should be able to return to their original hierarchical context.
+- When a node has multiple relationship types at once — "contains," "depends on," "references" — don't force them all into one tree. Partition by relationship semantics or provide a separate view.
+- Use a relationship graph only when the path, topology, or impact propagation itself is the judgment basis; when the user mainly needs to look up names and status, an adjacency list is usually more efficient.
+- Use a master-detail structure that preserves tree position when the user needs to repeatedly browse sibling objects after clicking a node; use a standalone route when they only occasionally check a detail.
 
-### 4.6 指标与图表
+### 4.6 Process, events, and discussion
 
-- 指标卡必须有明确口径、时间范围、单位和更新时间；孤立大数字没有决策价值。
-- 图表标题说明问题，图例和轴说明编码；不能只靠颜色区分系列。
-- 颜色保持跨图一致，异常色不用于普通系列。避免 3D、装饰渐变和无法比较面积的图形。
-- 图表提供数据表、下载或文本摘要中的至少一种替代表达。
+- `Steps` expresses the expected flow and current position; `Timeline` expresses events that already happened; a log expresses the system's raw execution record. The three cannot substitute for each other.
+- A process page should present the current state, the blocking reason, who's responsible, the next step, and the allowed actions together — not just a progress percentage.
+- Organize an event feed by time; each item should state the actor, the action, the object, the result, and the time. When filtering by event type is supported, the original order must remain recoverable.
+- A discussion thread preserves the speaker, time, referenced object, reply relationships, and edit state; system events carry lower weight but must not be flattened into undifferentiated text alongside human opinions.
+- Automated execution can use progressive disclosure — "stage summary → per-step result → raw log" — surfacing the information needed to locate a failure first by default.
 
-### 4.7 文档、差异与工作空间
+Kanban:
 
-- 文档型信息保持连续阅读结构，使用标题、目录、段落、代码块和引用表达语义；不要拆成大量独立 Card。
-- 差异型信息先给出范围和摘要，再直接并置或逐段显示变更；保留稳定锚点，使评论、检查结果能够指向具体变化。
-- 看板适合对象确实沿离散阶段流动、移动本身就是操作的场景；如果列只是不同筛选条件，使用视图切换或筛选更清楚。
-- 多面板工作空间只在用户需要反复交叉参照时使用。每个面板有独立职责，选择状态在面板间同步，主次宽度服从任务频率。
-- 专项表达仍应复用原生页面外壳、导航、按钮、反馈和表单；只为 Ant Design 没有覆盖的信息本体实现必要的领域组件。
+- Each column is a real stage, not a filter condition; column names match the process terminology, and the in-column count is always visible.
+- A card holds only what's needed for identification and advancement: identity, owner, a blocked/overdue signal, one key number. Full attributes belong in the detail.
+- Dragging is the action that writes a state change, so it must be undoable and must surface failure; keyboard users need an equivalent "move to…" action — dragging can't be the only path.
+- Make the drop target explicit: highlight the target column, and warn about impact before a cross-column move (does it trigger approval, does it skip a required step).
+- Sort within a column by advancement priority by default and keep it stable; when a column overflows, use in-column virtual scrolling or collapsing — don't scroll the whole column horizontally.
+- When the number of columns exceeds one screen, prefer reducing columns (merge similar stages) or switching to a filter — don't turn Kanban into an endlessly wide table.
 
-### 4.8 表单组织
+### 4.7 Metrics and charts
 
-- 单列表单优先，阅读和键盘路径最稳定；只有短且强关联的字段才并排。
-- 标签永久可见，使用用户语言并保持简短；placeholder 用于示例或格式提示，不代替标签。
-- 必填与可选标记采用项目统一策略。字段大多必填时可标“选填”，反之标必填；不要混用。
-- 帮助文字解释为什么填、如何填或影响什么，不重复标签。复杂规则在输入前可见。
-- 使用合适控件约束输入：有限枚举用选择，布尔决策用开关/单选，日期用日期组件；不要让用户记忆编码。
-- 默认值必须安全、常见且透明。系统推断值应允许用户确认或修改。
-- 分组标题表达业务阶段或概念，不使用“基础信息 1 / 其他信息”等无意义名称。
+- A metric card needs an explicit definition, time range, unit, and last-updated time; an isolated big number has no decision value.
+- A chart's title states the question; the legend and axes explain the encoding — don't rely on color alone to distinguish series.
+- Keep colors consistent across charts; don't use the anomaly color for an ordinary series. Avoid 3D effects, decorative gradients, and shapes whose area can't be compared.
+- Provide at least one alternative expression for a chart — a data table, a download, or a text summary.
 
-### 4.9 校验、提交与恢复
+### 4.8 Documents, diffs, and workspaces
 
-- 格式错误在字段完成输入后校验；跨字段或服务端规则在提交时校验，并把错误定位回相关字段。
-- 错误文案说明问题和修复方式，如“结束时间需晚于开始时间”，不要只写“参数错误”。
-- 首次提交失败后聚焦错误摘要或第一个错误字段；不能只在不可见区域标红。
-- 提交中禁用重复提交并保留按钮文案语义；长操作展示阶段或后台任务入口。
-- 创建成功说明创建了什么及下一步；编辑成功尽量留在上下文中，不强制跳回列表顶部。
-- 有用户输入的页面应处理误关闭、路由离开和超时登录；较长表单按需保存草稿。
-- 服务端返回冲突时展示发生变化的对象和解决选项，不应静默覆盖他人修改。
+- Keep document-type information in a continuous-reading structure, using headings, a table of contents, paragraphs, code blocks, and quotes to carry meaning — don't split it into a pile of separate Cards.
+- For diff-type information, give the scope and a summary first, then show the changes side by side or section by section; keep stable anchors so comments and check results can point at specific changes.
+- Kanban fits when objects genuinely move through discrete stages and moving itself is the action; if columns are just different filter conditions, a view toggle or filter is clearer.
+- Use a multi-panel workspace only when the user needs to cross-reference repeatedly. Give each panel a distinct responsibility, sync selection state across panels, and size primary/secondary widths by task frequency.
+- Purpose-built expressions should still reuse the native page shell, navigation, buttons, feedback, and forms — implement domain components only for the information substance Ant Design doesn't cover.
 
-### 4.10 Modal、Drawer 与独立页面
+### 4.9 Time and scheduling
 
-| 容器 | 适用 | 不适用 |
+- A calendar expresses "what a time slot is occupied by": an event block should show the object, the owner, and the time boundary at a glance — not just a title.
+- Make the time granularity and view explicit (month/week/day); render multi-day events across their actual span — don't truncate them into an isolated dot.
+- Surface conflicts proactively: when the same resource is double-booked in the same slot, give a hint and a resolution path on the event block or at the page level.
+- Cap the number of event blocks per cell; when there are more, aggregate into "+N" with a same-day list available, rather than cramming them into unreadable slivers.
+- Match resolution to interaction: the month view is for seeing distribution and conflicts; switch to a week/day view to adjust a specific time.
+- Make timezone and day-boundary crossing explicit; show each participant's local time when multiple people are collaborating.
+
+### 4.10 Form organization
+
+- Prefer a single-column form — the most stable reading and keyboard path; only pair short, tightly related fields side by side.
+- Keep labels permanently visible, worded in the user's language, and kept short; use placeholder for examples or format hints, never as a substitute for the label.
+- Adopt one consistent project-wide strategy for marking required vs. optional. If most fields are required, mark the exceptions "optional"; if the reverse, mark "required" — don't mix the two.
+- Help text explains why to fill a field, how to fill it, or what it affects — don't repeat the label. Make complex rules visible before input.
+- Constrain input with the right control: select for a bounded enum, switch/radio for a boolean decision, a date picker for dates — don't make users memorize an encoding.
+- Defaults must be safe, common, and transparent. System-inferred values should let the user confirm or change them.
+- Group headings should express a business stage or concept — not meaningless labels like "Basic Info 1 / Other Info."
+
+### 4.11 Validation, submission, and recovery
+
+- Validate format errors after a field is completed; validate cross-field or server-side rules on submit, and map errors back to the relevant field.
+- Error copy should explain the problem and the fix — e.g. "End time must be after start time" — not just "Invalid parameter."
+- After a first failed submission, focus the error summary or the first error field; don't just mark it red in an area the user might not see.
+- Disable resubmission while submitting and keep the button copy semantically accurate; show a stage indicator or a background-task entry for long operations.
+- On successful creation, state what was created and the next step; on successful edit, stay in context where possible instead of forcing a jump back to the top of a list.
+- A page with user input should handle accidental closes, route navigation away, and session timeout; save drafts as needed for longer forms.
+- On a server-reported conflict, show the object that changed and the resolution options — never silently overwrite someone else's edit.
+
+### 4.12 Modal, Drawer, and standalone pages
+
+| Container | Fits | Doesn't fit |
 |---|---|---|
-| Modal | 短确认、少量字段、立即完成的阻断任务 | 长表单、复杂对比、需要查阅背景的流程 |
-| Drawer | 在保留当前工作上下文时查看或轻量编辑辅助信息 | 多步骤流程、需要宽空间的表格、差异和图表 |
-| 独立页面 | 创建/编辑主任务、长流程、可分享内容、复杂权限与错误恢复 | 一句确认或极轻量操作 |
+| Modal | Short confirmation, few fields, an immediately completable blocking task | A long form, a complex comparison, a flow that needs background reading |
+| Drawer | Viewing or lightly editing supporting information while preserving current work context | A multi-step flow, a table needing wide space, diffs, or charts |
+| Standalone page | Creating/editing the primary task, a long flow, shareable content, complex permissions and error recovery | A one-line confirmation or an extremely lightweight action |
 
-- 弹层打开后焦点进入其标题或首个合理控件，关闭后返回触发元素。
-- 主操作位置和顺序在同类弹层中保持一致；取消始终可理解且不触发提交。
-- 不嵌套弹层。需要第二层内容时，在当前弹层内展开、替换步骤或进入独立页面。
-
----
-
-## 五、评审与提交前检查
-
-### 5.1 评审问题
-
-实现完成后只做与本指南目标直接相关的检查：
-
-1. 页面基于什么领域模型和信息模型？为什么当前表达比表格、详情或其他模式更合适？
-2. 不看需求文档，能否在 5 秒内说出页面对象、当前状态和主操作？
-3. 用户能否沿着信息关系直接判断，还是需要跨区域、跨 Tab 或跨页面记忆比较？
-4. 高频用户能否快速扫描，低频用户能否理解字段、证据与后果？
-5. 每个辅助表达模式是否服务于主模型？能否删掉无助于判断的区块、字段或按钮？
-6. 窄视口、长文本和大数据量是否破坏信息顺序？
-
-### 5.2 Workflow 1：页面定型
-
-- [ ] 已写明用户角色、页面主任务、领域模型、信息模型和成功结果
-- [ ] 已说明选择当前主表达模式的理由，没有因接口形状默认套用列表—详情
-- [ ] 页面有一个主模型，辅助表达服务于主任务；导航、标题、Tab 和面包屑各司其职
-- [ ] 主信息默认可见，次要信息渐进披露，没有照搬接口字段顺序
-- [ ] 页面层级、主次关系、辅助模型和信息权威位置已经明确
-
-### 5.3 Workflow 2：页面编排
-
-- [ ] 每页一个主标题，每个任务区最多一个主操作
-- [ ] 密度符合使用频率，没有用隐藏信息或增加容器掩盖结构问题
-- [ ] 页面身份、状态、主动作、核心判断信息和次要信息顺序清晰
-- [ ] 文案使用统一业务术语，动作名称能说明结果
-- [ ] 查询条件可见、可清除，刷新/返回后的保持行为符合任务需要
-
-### 5.4 Workflow 3：实现验收
-
-- [ ] 组件只是信息关系的实现结果，没有从组件清单反推页面结构
-- [ ] 表格有稳定 `rowKey`、默认排序、列优先级、空值、溢出、分页和操作规则
-- [ ] 表单分组按业务概念或任务阶段组织，不按接口字段顺序平铺
-- [ ] Modal、Drawer 和独立路由的边界符合内容长度、持续性和分享需求
-- [ ] 已检查窄视口、长文本、大数据量和键盘操作是否破坏信息顺序
-- [ ] 已对照 5.1 评审问题删除无助于判断的区块、字段、Tag 和按钮
+- When an overlay opens, focus should move to its title or the first reasonable control; on close, focus returns to the trigger element.
+- Keep the primary action's position and order consistent across overlays of the same kind; Cancel should always be understandable and never trigger a submit.
+- Don't nest overlays. When a second layer of content is needed, expand within the current overlay, replace the step, or move to a standalone page.
 
 ---
 
-## 参考基线
+## 5. Review and pre-submission checklist
 
-- [Ant Design 设计价值观](https://ant.design/docs/spec/values/)：自然、确定、意义感、生长性。
-- [Ant Design 主题定制](https://ant.design/docs/react/customize-theme/)：`ConfigProvider`、Design Token 与组件级 Token。
-- [Ant Design Pro](https://github.com/ant-design/ant-design-pro)：企业应用脚手架、当前工程基线与典型页面模板。
-- [ProComponents 架构与组件定位](https://github.com/ant-design/pro-components/blob/master/site/components/index.md)：`ProLayout`、`ProTable`、`ProForm`、`ProDescriptions` 等高阶抽象。
-- [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/)：页面实现与评审的可访问性基线。
-- [WAI：Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow) 与 [WAI：Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)：缩放回流与指针目标基线。
+### 5.1 Review questions
+
+Once implementation is complete, check only what's directly relevant to this guide's goals:
+
+1. What domain model and information model is the page based on? Why is the current expression a better fit than a table, a detail view, or another pattern?
+2. Without reading the requirements doc, can you state the page's object, current status, and primary action within 5 seconds?
+3. Can the user judge directly by following the information relationships, or do they need to remember a comparison across regions, Tabs, or pages?
+4. Can a high-frequency user scan quickly, and can a low-frequency user understand the fields, evidence, and consequences?
+5. Does every supporting expression pattern serve the primary model? Can any block, field, or button that doesn't aid judgment be deleted?
+6. Do narrow viewports, long text, and large data volumes break the information order?
+
+### 5.2 Workflow 1: Page shaping
+
+- [ ] The user role, page's primary task, domain model, information model, and success outcome are documented
+- [ ] The rationale for the chosen primary expression pattern is stated, without defaulting to list-detail because of the API's shape
+- [ ] The page has one primary model, and supporting expressions serve the primary task; navigation, title, Tabs, and breadcrumb each carry their own role
+- [ ] Primary information is visible by default, secondary information is progressively disclosed, and neither follows raw API field order
+- [ ] Page hierarchy, primary/secondary relationships, supporting models, and each piece of information's authoritative location are all explicit
+
+### 5.3 Workflow 2: Page orchestration
+
+- [ ] Each page has one primary heading, and each task region has at most one primary action
+- [ ] Density matches usage frequency, without hiding information or adding containers to mask structural problems
+- [ ] Page identity, status, primary action, core judgment information, and secondary information are ordered clearly
+- [ ] Copy uses consistent business terminology, and action names state the result
+- [ ] Query conditions are visible and clearable, and refresh/back behavior matches what the task needs
+
+### 5.4 Workflow 3: Implementation acceptance
+
+- [ ] Components are only the implementation result of information relationships, not reverse-engineered from a component inventory
+- [ ] Tables have a stable `rowKey`, a default sort, column priority, empty-value handling, overflow handling, pagination, and action rules
+- [ ] Form groups are organized by business concept or task stage, not laid out in API field order
+- [ ] The boundaries between Modal, Drawer, and standalone routes match content length, persistence, and sharing needs
+- [ ] No hand-written font size, weight, or color values; inline `style` is only for layout sizing, and custom-drawn parts come from Design Tokens
+- [ ] Narrow viewport, long text, large data volume, and keyboard operation have been checked for broken information order
+- [ ] Any block, field, Tag, or button that doesn't aid judgment has been removed per the 5.1 review questions
+
+---
+
+## Reference baseline
+
+- [Ant Design design values](https://ant.design/docs/spec/values/): natural, certain, meaningful, growing.
+- [Ant Design theme customization](https://ant.design/docs/react/customize-theme/): `ConfigProvider`, Design Tokens, and component-level tokens.
+- [Ant Design Pro](https://github.com/ant-design/ant-design-pro): enterprise application scaffold, this project's baseline, and typical page templates.
+- [ProComponents architecture and component positioning](https://github.com/ant-design/pro-components/blob/master/site/components/index.md): high-level abstractions like `ProLayout`, `ProTable`, `ProForm`, `ProDescriptions`.
+- [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/): the accessibility baseline for implementation and review.
+- [WAI: Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow) and [WAI: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html): the baseline for zoom reflow and pointer targets.

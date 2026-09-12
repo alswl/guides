@@ -22,7 +22,7 @@ Data is an in-memory mock (`src/data/`); writes (submitting a campaign, processi
 
 ## Page gallery
 
-The actual rendered result for all 19 skeletons, in Guide 2.3's order (menu grouping order is in the next section). Screenshots taken at a 1440px viewport; click through for the full-size image.
+The actual rendered result for all 19 skeletons, in Guide 2.3's order (menu grouping order is in the next section). Screenshots taken at a 1920px viewport; click through for the full-size image.
 
 ### Sectioned Detail
 
@@ -209,7 +209,7 @@ src/
     tags.tsx            # Status Tags: short text + low-intensity color expressed together
   pages/                # One file per skeleton; each file's header comment names the skeleton and its guide chapter
 docs/
-  screenshots/          # 19 page screenshots (1440px viewport), matching "Page gallery"
+  screenshots/          # 19 page screenshots (1920px viewport), matching "Page gallery"
 ```
 
 ## Suggested reading order

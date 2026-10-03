@@ -1,5 +1,7 @@
 # Go TUI Development Guide
 
+> Feedback is welcome. These guidelines may evolve with project needs and practical experience; propose changes through issues or pull requests.
+
 Conventions for building terminal user interfaces (TUIs) in Go. This guide builds on the [Go CLI Development Guide](./go-cli-guides.md): a TUI is usually launched from a CLI command, and it reuses the same `pkg/` business layers (`services / managers / dal / common`). This document covers only what is TUI-specific — the presentation layer.
 
 The stack is the [Charm](https://charm.sh/) ecosystem: [Bubble Tea](https://github.com/charmbracelet/bubbletea) (runtime, based on The Elm Architecture), [Lip Gloss](https://github.com/charmbracelet/lipgloss) (styling/layout), and [Bubbles](https://github.com/charmbracelet/bubbles) (ready-made components).

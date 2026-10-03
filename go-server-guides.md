@@ -1,5 +1,7 @@
 # Go Server Development Guide
 
+> Feedback is welcome. These guidelines may evolve with project needs and practical experience; propose changes through issues or pull requests.
+
 Conventions for building HTTP API services in Go. The application framework is [huma](https://huma.rocks/) (auto-generates OpenAPI 3.1); the ORM is [GORM](https://gorm.io/).
 
 References:
@@ -46,17 +48,22 @@ myserver/
 │   │   ├── middleware.go    # Logging, recovery, auth, request ID, etc.
 │   │   ├── routes.go        # Registers all huma operations
 │   │   └── user_handler.go  # huma operations for the user resource
-│   ├── services/            # Business use cases; entry for handlers; orchestrate managers
+│   ├── services/            # Required: use cases, transactions; call dal
 │   │   ├── user.go
 │   │   └── order.go
-│   ├── managers/            # Per-entity business logic; called by services; call dal
+│   ├── managers/            # Optional: entity business logic used by services
 │   │   ├── user.go
 │   │   └── order.go
 │   ├── dal/                 # Data Access Layer: GORM models + queries (table mapping only)
 │   │   ├── db.go            # DB connection, GORM init
 │   │   ├── user.go
 │   │   └── order.go
-│   └── common/              # Shared: errors, constants, middleware helpers, utilities
+│   ├── integrations/        # Third-party clients and external system adapters
+│   │   └── payment.go       # Example integration
+│   └── common/              # Shared code across layers
+│       ├── errors.go        # Shared domain errors
+│       ├── constants.go     # Shared constants
+│       └── utils.go         # Small reusable helpers
 ├── migrations/              # Versioned SQL migration files
 ├── api/                     # (Optional) exported openapi.yaml for frontend/docs
 ├── build/                   # Dockerfile, compose, k8s manifests
@@ -72,13 +79,14 @@ Layering direction (depend only downward):
 ```
 cmd/ → pkg/server/ (HTTP wiring + handlers)
               ↓
-    pkg/services/  (business use cases; entry for handlers; orchestrate managers)
-              ↓
-    pkg/managers/  (per-entity business logic; no HTTP)
+    pkg/services/  (required: use cases and transactions)
               ↓
     pkg/dal/       (data access, GORM; table mapping only)
               ↓
     database (GORM *gorm.DB)
+
+    pkg/services/ → pkg/managers/ (optional: extracted entity business logic)
+    pkg/services/ → pkg/integrations/ → external systems
 
     pkg/common/    (cross-cutting: errors, constants, utils — usable by any layer)
 ```
@@ -86,17 +94,18 @@ cmd/ → pkg/server/ (HTTP wiring + handlers)
 Rules:
 
 - **Thin entry point**: `main.go` only loads config, wires dependencies via constructors, and starts the server.
-- **The second-level dirs under `pkg/` are fixed layers**: `dal / services / managers / common` (+ `config`, `server`). **Do not add per-feature module packages.**
+- **The second-level dirs under `pkg/` are fixed layers**: `dal / services / integrations / common` (+ `config`, `server`); add `managers` only when needed. **Do not add per-feature module packages.**
 - **Within each layer, one file per entity** (`user.go`, `order.go`).
 - **Prefer `pkg/`**; use `internal/` only when code must not be importable externally.
 - **Handlers (`server/`)**: define huma operations; parse/validate via struct tags, call a service, serialize the response. No business logic.
-- **Services**: orchestrate managers to fulfill a use case; own transaction boundaries; this is what handlers call.
-- **Managers**: business logic for a single entity; call the dal.
+- **Services (required)**: handlers call services; services call dal and own use cases and transaction boundaries. Use managers only when entity business logic needs extraction.
+- **Managers (optional)**: entity business logic called by services. Simple business needs no manager.
 - **Dal**: GORM only here; table mapping and basic CRUD.
 - **Common**: shared errors, constants, helpers.
+- **Integrations**: third-party clients and external system adapters, called by services; organize files by external system and keep vendor data mapping here.
 - **Program to interfaces** at the services / managers / dal boundaries; inject dependencies via constructors.
 - **Separate DTOs from GORM models**: huma Input/Output structs live in `server/`; GORM models live in `dal/`.
-- **Adding a resource**: add `user.go` in `dal/`, `managers/`, `services/`, add `user_handler.go` in `server/`, and add one registration line in `routes.go`.
+- **Adding a resource**: add `user.go` in `dal/` and `services/` (also `managers/` when needed), add `user_handler.go` in `server/`, and add one registration line in `routes.go`.
 
 ```go
 // pkg/server/user_handler.go — huma operation calls a service
@@ -148,10 +157,10 @@ func registerRoutes(api huma.API, deps *Deps) {
 
 ## GORM Conventions
 
-**GORM does table mapping only — no complex relationship handling.** Keep it to plain models and basic CRUD. Resolve relationships explicitly in the manager layer.
+**GORM does table mapping only — no complex relationship handling.** Keep it to plain models and basic CRUD. Resolve relationships explicitly in services or optional managers.
 
 - **Models = plain tables**: embed `gorm.Model` or a custom primary key; declare constraints with tags (`gorm:"uniqueIndex"`, `gorm:"not null"`). Store foreign keys as plain scalar columns (e.g., `UserID uint`); **do not** define association fields (`has-many`, `belongs-to`).
-- **No association magic**: avoid `Preload`, `Association`, and auto-created foreign-key constraints. When a relation is needed, fetch each side separately in the manager and compose the result.
+- **No association magic**: avoid `Preload`, `Association`, and auto-created foreign-key constraints. When a relation is needed, fetch each side through dal in the service and compose the result, using a manager when needed.
 - **Migration**: `AutoMigrate` for local bootstrapping only; use versioned SQL migrations in production (tooling TBD).
 - **Always pass context**: query with `db.WithContext(ctx)`.
 - **Transactions**: wrap multi-table writes in `db.Transaction(func(tx *gorm.DB) error {...})`.
@@ -169,7 +178,7 @@ func registerRoutes(api huma.API, deps *Deps) {
 - On signal, call `server.Shutdown(ctx)`: stop accepting new requests, drain in-flight ones, close the DB pool. Set a shutdown timeout.
 
 ### Context and timeouts
-- Thread `context.Context` from handler through service, manager, dal, and DB calls.
+- Thread `context.Context` from handler through service, dal, and DB calls, and through managers when used.
 - Set timeouts on external calls (DB, third-party APIs).
 
 ### Error handling

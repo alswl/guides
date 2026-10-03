@@ -12,6 +12,7 @@ Each guide picks one stack, fixes one project layout, and states the rules as in
 | --- | --- | --- |
 | [go-cli-guides.md](./go-cli-guides.md) | cobra · viper · `log/slog` | Command tree layout, flag and config precedence, clig.dev conventions for output, exit codes and errors |
 | [go-server-guides.md](./go-server-guides.md) | huma v2 · chi · GORM | Layered `pkg/` structure, declarative API definitions with generated OpenAPI 3.1, GORM restricted to table mapping and basic CRUD |
+| [python-server-guides.md](./python-server-guides.md) | FastAPI · SQLAlchemy Core · Alembic | Layered `src/` structure, Pydantic HTTP schemas and generated OpenAPI, SQLAlchemy limited to explicit Core queries without ORM |
 | [go-tui-guides.md](./go-tui-guides.md) | Bubble Tea · Lip Gloss · Bubbles | The Elm Architecture applied to a real app: model composition, messaging, layout, key bindings — reusing the CLI guide's business layers |
 | [fe-page-guide-antd.md](./fe-page-guide-antd.md) | Ant Design v5 · ProComponents | How to organize information-dense pages: derive the information model, pick the expression skeleton, order the page, verify the result |
 
@@ -28,7 +29,7 @@ npm run dev
 ## Shared conventions
 
 - Follow mainstream community standards and de facto tooling. No bespoke frameworks.
-- Layer business code as `services / managers / dal / common`; one file per entity within each layer.
+- Go/Python servers follow `handler → service → dal`; services may use optional managers for entity business logic. Use one file per entity within each layer.
 - Prefer `pkg/` (importable); use `internal/` only when code must not be importable.
 - Program to interfaces; keep entry points thin — `main.go` does nothing but `os.Exit(Execute())`.
 - Use what the chosen stack already provides — huma's built-in validation, stdlib `log/slog`, Ant Design's default tokens — instead of adding a parallel layer to do the same job.

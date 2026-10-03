@@ -1,5 +1,7 @@
 # Information-Dense Page Organization Guide (Ant Design)
 
+> Feedback is welcome. These guidelines may evolve with project needs and practical experience; propose changes through issues or pull requests.
+
 > For product managers, designers, frontend developers, and AI coding tools: identify the core model of business information, then use the right expression pattern and native Ant Design Pro / ProComponents to organize pages so users can understand, judge, and act continuously.
 >
 > **Scope: information-dense pages** — pages where the user must understand multiple objects, multiple states, and the relationships between them within one screen, then judge and act on that understanding. The criterion is the density and structure of the information, not the product's form factor or how it's procured: admin backends, monitoring and observability consoles, data and analytics tools, ops consoles, review and ticketing systems, and trading/scheduling terminals all qualify. Marketing landing pages, content-consumption pages, and single-conversion form flows are out of scope — their success depends on persuasion and conversion, not on whether the user can judge accurately amid dense information.

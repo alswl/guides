@@ -1,5 +1,7 @@
 # Go CLI Development Guide
 
+> Feedback is welcome. These guidelines may evolve with project needs and practical experience; propose changes through issues or pull requests.
+
 Conventions for building command-line tools (CLIs) in Go.
 
 References:

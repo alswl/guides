@@ -4,7 +4,7 @@ English | [简体中文](./README.zh-CN.md)
 
 Opinionated development guides for building software that stays consistent as it grows.
 
-Each guide picks one stack, fixes one project layout, and states the rules as instructions — not as a survey of options. They are written to be read by people *and* pasted into AI coding tools, so every rule is short, checkable, and free of "it depends".
+Development guides choose a stack and project layout; UI and documentation guides define organization principles, quality goals, and factual boundaries. They are written for people *and* AI tools. Requirements should be checkable; illustrative examples can be adapted to the project.
 
 ## Guides
 
@@ -15,6 +15,7 @@ Each guide picks one stack, fixes one project layout, and states the rules as in
 | [python-server-guides.md](./python-server-guides.md) | FastAPI · SQLAlchemy Core · Alembic | Layered `src/` structure, Pydantic HTTP schemas and generated OpenAPI, SQLAlchemy limited to explicit Core queries without ORM |
 | [go-tui-guides.md](./go-tui-guides.md) | Bubble Tea · Lip Gloss · Bubbles | The Elm Architecture applied to a real app: model composition, messaging, layout, key bindings — reusing the CLI guide's business layers |
 | [fe-page-guide-antd.md](./fe-page-guide-antd.md) | Ant Design v5 · ProComponents | How to organize information-dense pages: derive the information model, pick the expression skeleton, order the page, verify the result |
+| [software-user-manual-guide.md](./software-user-manual-guide.md) · [简体中文](./software-user-manual-guide.zh-CN.md) | Stack-independent | Audience and structure, task-based writing, Chinese prose conventions, visuals, safe validation, and maintenance |
 
 ### Runnable examples
 

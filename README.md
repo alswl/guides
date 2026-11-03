@@ -15,6 +15,7 @@ Development guides choose a stack and project layout; UI and documentation guide
 | [python-server-guides.md](./python-server-guides.md) | FastAPI · SQLAlchemy Core · Alembic | Layered `src/` structure, Pydantic HTTP schemas and generated OpenAPI, SQLAlchemy limited to explicit Core queries without ORM |
 | [go-tui-guides.md](./go-tui-guides.md) | Bubble Tea · Lip Gloss · Bubbles | The Elm Architecture applied to a real app: model composition, messaging, layout, key bindings — reusing the CLI guide's business layers |
 | [fe-page-guide-antd.md](./fe-page-guide-antd.md) | Ant Design v5 · ProComponents | How to organize information-dense pages: derive the information model, pick the expression skeleton, order the page, verify the result |
+| [macos-app-ui-guide.md](./macos-app-ui-guide.md) · [简体中文](./macos-app-ui-guide.zh-CN.md) | Native · Electron · Stack-independent | Five window compositions, visual defaults, control decision tables, editing and recovery contracts, a worked example, and executable acceptance |
 | [software-user-manual-guide.md](./software-user-manual-guide.md) · [简体中文](./software-user-manual-guide.zh-CN.md) | Stack-independent | Audience and structure, task-based writing, Chinese prose conventions, visuals, safe validation, and maintenance |
 
 ### Runnable examples

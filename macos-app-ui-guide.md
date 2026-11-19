@@ -84,6 +84,10 @@ Polish starts with alignment, proportion, continuity, and state feedback. Comple
 
 **Product observations:** [Things](https://culturedcode.com/things/features/) expands task details inside an item, supporting lightweight rows with optional detail. [Bear](https://bear.app/faq/typography-options/) offers reading font, line width, and spacing preferences, separating content typography from toolbar density. [Linear's design retrospective](https://linear.app/now/behind-the-latest-design-refresh) discusses quieter navigation, smaller icons, fewer borders, and predictable action locations. Transfer these relationships without copying brand colors. Glass, gradients, and dark themes are not acceptance requirements for modern UI.
 
+### Properties in document-style details
+
+Place the short properties needed for the next decision below the title. Group related values such as status, source, date, and owner on the same row. Give repository paths, document locations, and multiple tags a full row, and allow long values to wrap. Wide windows can place extended properties in a secondary pane. In narrow windows, stack the title, properties, and body. Order the description, excerpts, related material, and activity for reading.
+
 ## 4. Navigation, selection, and commands
 
 | Condition | Default choice | Switching condition / distinction |
@@ -103,6 +107,12 @@ Polish starts with alignment, proportion, continuity, and state feedback. Comple
 | C2 Search and bulk actions | Show result scope and selection count; define Select All | “Select all 24 results” / silently acting on the whole library | Filter, select all, inspect affected objects; verify consistent selection after clearing filters |
 | C3 Icon controls | Use one icon family; tooltips name action and actual shortcut; accessibility names do not depend on tooltips | Magnifier named Search / three unnamed similar magic wands | Identify controls using keyboard and VoiceOver, including state; hit-area edges work |
 | C4 Progressive disclosure | Reveal advanced controls by task, with keyboard/menu access; keep common controls stable | Selection reveals properties / all features discoverable only on hover | Complete the same task without a mouse; changing selection does not destabilize layout |
+
+### From collection to detail
+
+- Keep the fields people scan and compare in the collection. A single click selects an item and can show a preview in a wide window. Return or a double click opens full details. On Escape, restore the previous view, filters, scroll position, and selection, and return focus to the original item.
+- Put view switching, display options, and saving views in the collection toolbar. Put object-level actions in the detail header and single-property actions beside fields such as dates and tags.
+- Use familiar system icons for common secondary actions such as expanding, collapsing, editing, or filtering. Give icon-only controls accessible names and hints visible on hover and keyboard focus. Keep explicit action labels for completing a task, closing an issue, or submitting changes. Supporting copy should explain scope, consequences, or recovery.
 
 **Product and community practice:** [Raycast](https://manual.raycast.com/quickstart) associates its Action Panel with the current result. [Firefox](https://support.mozilla.org/en-US/kb/customize-firefox-controls-buttons-and-toolbars) supports toolbar and overflow customization. [VS Code](https://code.visualstudio.com/docs/configure/custom-layout) supports layout changes and restoration. Add customization only for demonstrated workflow complexity and include a reset. KDE's [simple defaults](https://develop.kde.org/hig/simple_by_default/) and [power when needed](https://develop.kde.org/hig/powerful_when_needed/) offer transferable community methods, not macOS shortcut conventions.
 
@@ -124,6 +134,10 @@ Polish starts with alignment, proportion, continuity, and state feedback. Comple
 | E2 Direct manipulation | Align handles, cursors, and target feedback; provide keyboard/menu/value alternatives | Resize edge with size feedback / invisible target with no precise input | Test edge hits, invalid targets, boundaries; achieve the same result without dragging |
 | E3 In-place text | Define commit, cancel, and blur behavior; preserve invalid input for correction | Enter commits a single line, Esc cancels / losing text on blur | Enter during IME composition does not submit; distinguish newline from submission |
 | E4 Multi-selection properties | Distinguish shared and mixed values; change only the specified attribute | Mixed marker; changing tag preserves other fields / first object's value presented as shared | Select different objects, change one attribute, verify all other fields |
+
+### Tag editing
+
+Show applied tags as individual chips. Give users a dedicated control to search, select, and remove tags. Scope the available choices and make it clear whether new tags can be created. Show the pending state during submission and update applied tags after confirmation. Cancel restores the previous selection.
 
 Direct manipulation applies to editable content; it does not turn every app into an editor. **Product observations:** [Obsidian tabs](https://help.obsidian.md/tabs) offer drag grouping and command access; [iMovie](https://support.apple.com/en-us/102353) edge trimming shows a direct relationship between object and result. Adopt these interactions only when the corresponding objects and constraints exist.
 
@@ -150,6 +164,8 @@ Platform reference: [Undo and redo](https://developer.apple.com/design/human-int
 | Input/files | IME, file panels, external drops, system clipboard | Test IME composition, application menus, native file dialogs, and clipboard behavior |
 
 Platform reference: [Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility). Implementation references: Electron [window interactions](https://www.electronjs.org/docs/latest/tutorial/custom-window-interactions), [Menu](https://www.electronjs.org/docs/latest/api/menu), [Accessibility](https://www.electronjs.org/docs/latest/tutorial/accessibility). Framework choice should not change the meaning of the same user action.
+
+Reuse components and actions across equivalent interactions. Shared components render view strips, property layouts, tag pickers, icon buttons, and activity rows. Callers supply the object, available actions, and their scope. The same action keeps its name, availability, and behavior across a list, detail view, and command palette.
 
 ## 8. Worked example: a local reference library
 
@@ -181,6 +197,7 @@ Record **Pass / Fail / Not applicable (reason)** with window dimensions, data, a
 | Readability | Check text/background contrast and enlarge text | This system adopts 4.5:1 for ordinary text and 3:1 for large text as a starting baseline; no clipping; readability survives theme changes |
 | Commands/selection | Single, multiple, filtered Select All; execute via menu/toolbar/shortcut | Consistent scope and clear count; unauthorized/unavailable actions do not run |
 | Keyboard/assistive technology | Complete primary task without mouse; read key controls with VoiceOver | Visible focus, no traps, accurate names/states; dismissing temporary UI returns focus |
+| Collection to detail | Filter and open an item in wide and narrow windows, edit its tags, and return | Properties fit their content. Tags update on confirmation. The view, filters, scroll position, selection, and focus are restored |
 | Edit transaction | Drag then undo; Esc mid-drag; confirm IME composition | One intent, one undo; cancel restores original; composition does not submit |
 | Recovery/tasks | Write failure, offline, retry, close window, quit/reopen | No false success or loss of confirmed saved data; task consequences and recovery clear |
 | Actual application | Repeat menus, window controls, file entry in packaged macOS app | Promised behavior works; browser preview does not substitute for desktop acceptance |
